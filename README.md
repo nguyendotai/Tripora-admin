@@ -15,7 +15,7 @@ cp .env.example .env.local   # trỏ NEXT_PUBLIC_API_BASE_URL sang backend
 npm run dev
 ```
 
-Mở http://localhost:3002 (khuyến nghị chạy port khác `frontend/` khi dev song song, xem package.json script `dev`).
+Mở http://localhost:3003 (port cố định riêng — xem package.json script `dev` — để chạy song song cùng `frontend/` ở 3002).
 
 ## Cấu trúc thư mục
 ```
