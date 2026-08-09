@@ -97,6 +97,7 @@ Dùng cho mọi trạng thái nghiệp vụ hiển thị dạng pill trong Data 
 - **List Widget nhỏ** (ví dụ "Incomplete Profiles"): Tabs chuyển nhóm dữ liệu ở đầu, mỗi dòng = Avatar + tên + Badge vai trò (7.5) + text phụ (`text-xs muted`) + icon edit bên phải.
 
 ### 7.7 Typography Accent
+- **Font chữ**: `Google Sans` (text) + `Google Sans Code` (monospace) qua `next/font/google`, khai báo ở `src/app/layout.tsx` với `variable: "--font-sans"`/`"--font-mono"` (khớp trực tiếp token Tailwind, không đặt tên khác như `--font-geist-sans`) — đồng bộ với `frontend/`. Subsets bắt buộc gồm `latin` + `vietnamese`. Không tự đổi sang font khác khi chưa có yêu cầu.
 - Tiêu đề trang (Header breadcrumb): bold, `text-lg`~`text-xl`, kèm icon nhỏ bên trái.
 - Số liệu tổng hợp trong Card (`label: value`): `value` bold `text-sm`~`text-base`, `label` `text-xs muted-foreground`, đặt liền kề theo hàng ngang, phân tách bằng khoảng trắng đều nhau (không dùng bảng/table cho hàng này).
 - Số phần trăm trong Gauge/Donut: rất lớn, bold, đặt giữa biểu đồ.
