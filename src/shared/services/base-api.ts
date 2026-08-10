@@ -65,6 +65,6 @@ const baseQueryWithAuthHandling: BaseQueryFn<string | FetchArgs, unknown, FetchB
 export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: baseQueryWithAuthHandling,
-  tagTypes: ['Partner', 'Property', 'Product', 'Booking', 'User', 'Destination'],
+  tagTypes: ['Partner', 'Property', 'Room', 'RoomAvailability', 'Product', 'Booking', 'User', 'Destination'],
   endpoints: () => ({}),
 });

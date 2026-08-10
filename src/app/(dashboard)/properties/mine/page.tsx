@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { BedDouble, Pencil, Plus, Trash2 } from 'lucide-react';
 import { ThemeToggle } from '@/shared/components/theme-toggle';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -108,6 +109,13 @@ export default function MyPropertiesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">
+                      <Link
+                        href={`/properties/mine/${property.id}/rooms`}
+                        className="inline-flex size-8 items-center justify-center rounded-md hover:bg-secondary"
+                        aria-label="Quản lý hạng phòng"
+                      >
+                        <BedDouble className="size-4" />
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon-sm"
