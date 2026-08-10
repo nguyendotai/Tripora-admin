@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Building2,
   CalendarCheck,
+  Handshake,
   Wallet,
   ShieldCheck,
   MapPinned,
@@ -37,7 +38,9 @@ function getNavGroups(role: AuthUser['role'] | undefined) {
         isPartner
           ? { icon: Building2, label: 'Property của tôi', href: '/properties/mine' }
           : { icon: Building2, label: 'Properties', href: '/properties' },
-        { icon: CalendarCheck, label: 'Bookings', href: null },
+        // Bookings: chỉ Admin xem được toàn hệ thống (GET /bookings yêu cầu ADMIN/SUPER_ADMIN) —
+        // Partner chưa có trang riêng xem Booking liên quan tới mình (dùng GET /bookings/partner).
+        isPartner ? { icon: CalendarCheck, label: 'Bookings', href: null } : { icon: CalendarCheck, label: 'Bookings', href: '/bookings' },
       ],
     },
     {
@@ -46,7 +49,12 @@ function getNavGroups(role: AuthUser['role'] | undefined) {
     },
     {
       label: 'Quản trị',
-      items: [{ icon: ShieldCheck, label: 'Roles & Permissions', href: null }],
+      items: [
+        isPartner
+          ? { icon: Handshake, label: 'Partners', href: null }
+          : { icon: Handshake, label: 'Partners', href: '/partners' },
+        { icon: ShieldCheck, label: 'Roles & Permissions', href: null },
+      ],
     },
   ] as const;
 }
