@@ -30,7 +30,7 @@ const NAV_GROUPS = [
   {
     label: 'Marketplace',
     items: [
-      { icon: Building2, label: 'Partner & Property', href: null },
+      { icon: Building2, label: 'Properties', href: '/properties' },
       { icon: CalendarCheck, label: 'Bookings', href: null },
     ],
   },
