@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Compass } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -52,9 +52,7 @@ export default function LoginPage() {
     <div className="flex min-h-full flex-1 items-center justify-center bg-background px-4 py-16">
       <Card className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center gap-2 text-center">
-          <span className="flex size-10 items-center justify-center rounded-[var(--radius-md)] bg-primary text-primary-foreground">
-            <Compass className="size-5" />
-          </span>
+          <Image src="/logo-icon.png" alt="" width={40} height={40} className="size-10" priority />
           <CardTitle className="text-xl">
             Tripora <span className="text-primary">Admin</span>
           </CardTitle>

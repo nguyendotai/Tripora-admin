@@ -12,6 +12,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { buttonVariants } from '@/shared/components/ui/button';
+import { Logo } from '@/shared/components/logo';
 import { useAppDispatch } from '@/shared/hooks/use-app-dispatch';
 import { useAppSelector } from '@/shared/hooks/use-app-selector';
 import { useLogoutMutation, clearCredentials, clearAuthStorage } from '@/features/auth';
@@ -65,9 +66,7 @@ export function Sidebar() {
   return (
     <aside className="flex w-64 shrink-0 flex-col gap-6 bg-sidebar px-4 py-6 text-sidebar-foreground">
       <div className="flex items-center gap-2 px-2">
-        <span className="text-lg font-bold text-white">
-          Tripora <span className="text-primary">Admin</span>
-        </span>
+        <Logo textClassName="text-white" />
       </div>
 
       <nav className="flex flex-1 flex-col gap-6">

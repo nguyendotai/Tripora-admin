@@ -31,10 +31,10 @@ Giống hệt `frontend/` để tái sử dụng kinh nghiệm dev: React, Next.
 Build thành công; không lỗi TS/ESLint; Responsive (ít nhất Desktop — Admin/Partner chủ yếu dùng màn lớn, Mobile là tối ưu thêm không bắt buộc như `frontend/`); đủ UI State; đúng phân quyền theo `business-rules.md`; không đổi code ngoài phạm vi; cập nhật CHANGELOG.md và PROJECT_STATUS.md.
 
 ## 7. DESIGN SYSTEM (ADMIN DASHBOARD REFERENCE)
-> Phân tích từ ảnh reference phong cách "Dark Sidebar Admin Dashboard" (Sidebar tối cố định, vùng nội dung sáng, brand đỏ đậm, card bo lớn kèm biểu đồ/bảng dữ liệu dày đặc). **Chỉ lấy bố cục/tỉ lệ/màu sắc/thành phần UI làm tham chiếu — KHÔNG copy tên thương hiệu/logo trong ảnh, giữ nguyên "Tripora Admin".** Áp dụng cho toàn bộ layout `admin/` (Dashboard, Partner/Property Approval, Booking Management, Reports...). Biến CSS khai báo tại `:root` (Light, mặc định) và `.dark` (Dark) trong `src/app/globals.css`, đúng convention shadcn/ui — riêng token Sidebar là ngoại lệ cố định, xem 7.3.
+> Phân tích từ ảnh reference phong cách "Dark Sidebar Admin Dashboard" (Sidebar tối cố định, vùng nội dung sáng, card bo lớn kèm biểu đồ/bảng dữ liệu dày đặc). **Chỉ lấy bố cục/tỉ lệ/thành phần UI làm tham chiếu — KHÔNG copy tên thương hiệu/logo/màu trong ảnh, giữ nguyên "Tripora Admin".** Màu sắc thực tế lấy từ logo chính thức (navy `#14365C` + teal `#0C8788`, xem 7.4), không phải màu đỏ trong ảnh reference gốc. Áp dụng cho toàn bộ layout `admin/` (Dashboard, Partner/Property Approval, Booking Management, Reports...). Biến CSS khai báo tại `:root` (Light, mặc định) và `.dark` (Dark) trong `src/app/globals.css`, đúng convention shadcn/ui — riêng token Sidebar là ngoại lệ cố định, xem 7.3.
 
 ### 7.1 Layout Tổng Quan
-- **Sidebar** (trái, cố định, luôn tối — xem 7.3): logo + icon brand đỏ, ô Search, menu chia nhóm bằng label nhỏ viết hoa/muted (ví dụ: *Member Management*, *Booking Management*, *Financial*, *Administration*), mỗi item = icon + label, item active có nền đỏ-tối (tint đậm của `--primary`) bo `--radius-md`. Nút **Logout** cố định cuối Sidebar, dạng outline pill màu đỏ.
+- **Sidebar** (trái, cố định, luôn tối — xem 7.3): logo (`shared/components/logo.tsx`, dùng `public/logo-icon.png`) + icon brand navy, ô Search, menu chia nhóm bằng label nhỏ viết hoa/muted (ví dụ: *Member Management*, *Booking Management*, *Financial*, *Administration*), mỗi item = icon + label, item active có nền navy-tối (`--sidebar-active`, tint tối của `--sidebar-primary`) bo `--radius-md`. Nút **Logout** cố định cuối Sidebar, dạng outline pill màu `--primary` (navy).
 - **Header** (trên, theo theme): breadcrumb/tiêu đề trang bên trái; bên phải: bộ lọc ngày, icon trạng thái kết nối/hỗ trợ, chuông Notification (badge số), avatar + tên + Role ("Admin"/"Partner").
 - **Content Area** (theo theme): nền `--background`, gồm nhiều Card trắng/tối xếp lưới — mỗi Card có: icon badge tròn nhỏ (nền tint `--primary`) + tiêu đề bên trái, dãy số liệu tổng hợp dạng `label: value` bên phải (ví dụ `Total Members  1225   Active  900   Inactive  200`), bên dưới là biểu đồ hoặc bảng dữ liệu.
 
@@ -53,27 +53,30 @@ Build thành công; không lỗi TS/ESLint; Responsive (ít nhất Desktop — A
 - **Dark** (suy luận theo tông thương hiệu, ảnh mẫu không có ví dụ Dark thật): Content Area nền tối (gần màu Sidebar nhưng có thể nhỉnh sáng hơn 1 chút để phân biệt vùng), Card nền tối hơn nền 1 bậc kèm border mờ, chữ sáng.
 
 ### 7.4 Color Tokens
+> Cập nhật từ logo chính thức (`admin/public/logo.png` — full lockup, `admin/public/logo-icon.png` — icon riêng dùng cho Sidebar/Login nhỏ): Navy `#14365C` (icon la bàn + wordmark) + Teal `#0C8788` (vệt swoosh). Màu lấy chính xác qua sample pixel từ file logo, không phải ước lượng mắt thường. Navy gốc quá tối để dùng trực tiếp trên nền gần đen (Sidebar cố định + Content Area Dark theme) — riêng 2 vùng đó dùng bản navy **sáng hơn** `#4C7EB0` để đủ contrast, xem ghi chú theo từng dòng.
+
 | Token | Light | Dark |
 | :--- | :--- | :--- |
 | `--sidebar` (cố định 2 theme) | `#0D0D10` | `#0D0D10` |
 | `--sidebar-foreground` | `#A6A8AE` | `#A6A8AE` |
-| `--sidebar-active` (nền item active) | `#3A1418` | `#3A1418` |
+| `--sidebar-primary`/`--sidebar-ring` (navy sáng — nền Sidebar gần đen) | `#4C7EB0` | `#4C7EB0` |
+| `--sidebar-active` (nền item active, tint navy tối) | `#132B44` | `#132B44` |
 | `--background` | `#F5F6F8` | `#0E1013` |
 | `--foreground` | `#16171B` | `#F2F3F5` |
 | `--card` | `#FFFFFF` | `#181A1F` |
 | `--card-foreground` | `#16171B` | `#F2F3F5` |
-| `--primary` (Brand đỏ) | `#D42E3D` | `#D42E3D` (giữ nguyên, không đổi theo theme) |
+| `--primary` (Brand navy) | `#14365C` | `#4C7EB0` (**lightened** — Content Area Dark cũng nền gần đen `#0E1013`, navy gốc mất contrast) |
 | `--primary-foreground` | `#FFFFFF` | `#FFFFFF` |
 | `--secondary` | `#F0F1F3` | `#1E2126` |
 | `--secondary-foreground` | `#16171B` | `#E7E9EE` |
 | `--muted` | `#F3F4F6` | `#1A1C21` |
 | `--muted-foreground` | `#6B7280` | `#8B90A0` |
-| `--accent` (tint đỏ nhạt cho icon badge/hover) | `#FCE9EA` | `#2C1518` |
-| `--accent-foreground` | `#D42E3D` | `#FF8C93` |
+| `--accent` (tint teal nhạt cho icon badge/hover) | `#E3F5F4` | `#0F2C2C` |
+| `--accent-foreground` (Brand teal) | `#0C8788` | `#3FD9D0` |
 | `--destructive` | `#DC2626` | `#F87171` |
 | `--border` | `rgba(0,0,0,.08)` | `rgba(255,255,255,.08)` |
-| `--ring` | `#D42E3D` | `#D42E3D` |
-| `--chart-1` (đỏ, chuỗi chính) | `#D42E3D` | `#E5535F` |
+| `--ring` | `#14365C` | `#4C7EB0` |
+| `--chart-1` (navy, chuỗi chính — đồng bộ `--primary`) | `#14365C` | `#4C7EB0` |
 | `--chart-2` (đen/tối, chuỗi phụ) | `#16171B` | `#C7CBD1` |
 | `--chart-3` (xám, chuỗi nền) | `#C7CBD1` | `#3A3D44` |
 | `--chart-4` (cyan, chuỗi phụ trong combo chart) | `#22B8CF` | `#3FD3E8` |
