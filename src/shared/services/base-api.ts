@@ -35,21 +35,50 @@ function isApiResponseEnvelope(value: unknown): value is ApiResponse<unknown> {
   return typeof value === 'object' && value !== null && 'success' in value && 'data' in value;
 }
 
-/** accessToken hết hạn (401) — đăng xuất cưỡng bức, chưa có refresh-token rotation ở Admin. */
+function forceLogout() {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(AUTH_STORAGE_KEY);
+  // Ngoài React component/Router context (RTK Query baseQuery) nên không dùng được useRouter().
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.href = '/login';
+}
+
+/**
+ * accessToken hết hạn (401) — thử refresh-token rotation 1 lần trước khi đăng xuất cưỡng bức
+ * (refreshToken nằm trong Cookie HTTP-Only, gửi tự động qua credentials: 'include').
+ * KHÔNG import action creator từ features/auth (folder-structure.md mục 4: Feature -> Shared,
+ * không theo chiều ngược lại) — dispatch action thô khớp type do createSlice tự sinh.
+ */
 const baseQueryWithAuthHandling: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
   extraOptions,
 ) => {
-  const result = await rawBaseQuery(args, api, extraOptions);
+  let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
-    api.dispatch({ type: 'auth/clearCredentials' });
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(AUTH_STORAGE_KEY);
-      // Ngoài React component/Router context (RTK Query baseQuery) nên không dùng được useRouter().
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.href = '/login';
+    const isRefreshCall = typeof args !== 'string' && args.url === '/auth/refresh';
+
+    if (!isRefreshCall) {
+      const refreshResult = await rawBaseQuery({ url: '/auth/refresh', method: 'POST' }, api, extraOptions);
+
+      if (!refreshResult.error && isApiResponseEnvelope(refreshResult.data)) {
+        const { accessToken } = refreshResult.data.data as { accessToken: string };
+        const user = (api.getState() as RootState).auth.user;
+
+        if (accessToken && user) {
+          api.dispatch({ type: 'auth/setCredentials', payload: { accessToken, user } });
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ accessToken, user }));
+          }
+          result = await rawBaseQuery(args, api, extraOptions);
+        }
+      }
+    }
+
+    if (result.error?.status === 401) {
+      api.dispatch({ type: 'auth/clearCredentials' });
+      forceLogout();
     }
   }
 
