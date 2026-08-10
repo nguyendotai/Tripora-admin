@@ -22,3 +22,21 @@ export interface Property {
   createdAt: string;
   updatedAt: string;
 }
+
+export const PROPERTY_TYPES = ['HOTEL', 'RESORT', 'VILLA', 'APARTMENT', 'HOSTEL', 'HOMESTAY'] as const;
+export type PropertyTypeValue = (typeof PROPERTY_TYPES)[number];
+
+export interface CreatePropertyInput {
+  destinationId: string;
+  type: PropertyTypeValue;
+  name: string;
+  description?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  cancellationPolicy?: string;
+}
+
+export type UpdatePropertyInput = Partial<CreatePropertyInput>;
