@@ -31,6 +31,10 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
+function isApiResponseEnvelope(value: unknown): value is ApiResponse<unknown> {
+  return typeof value === 'object' && value !== null && 'success' in value && 'data' in value;
+}
+
 /** accessToken hết hạn (401) — đăng xuất cưỡng bức, chưa có refresh-token rotation ở Admin. */
 const baseQueryWithAuthHandling: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
@@ -47,6 +51,12 @@ const baseQueryWithAuthHandling: BaseQueryFn<string | FetchArgs, unknown, FetchB
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/login';
     }
+  }
+
+  // Backend luôn bọc response thành công qua ResponseInterceptor: { success, message, data, timestamp }.
+  // Endpoint (login, destination...) chỉ khai báo type của phần `data` — phải bóc vỏ ở đây 1 lần duy nhất.
+  if (!result.error && isApiResponseEnvelope(result.data)) {
+    return { data: result.data.data, meta: result.meta };
   }
 
   return result;
