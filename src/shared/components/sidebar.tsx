@@ -10,8 +10,12 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useLogoutMutation } from "@/features/auth/api/auth.api";
+import { clearSession } from "@/features/auth/services/auth-storage";
+import { logout } from "@/features/auth/store/auth.slice";
+import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
 import { Logo } from "./logo";
 
 const NAV_GROUPS = [
@@ -35,11 +39,25 @@ const NAV_GROUPS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation().unwrap();
+    } catch {
+      // ignore — clear local session regardless
+    }
+    clearSession();
+    dispatch(logout());
+    router.push("/login");
+  };
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 items-center px-5">
-        <Logo />
+        <Logo light />
       </div>
 
       <div className="px-4 pb-2">
@@ -82,6 +100,8 @@ export function Sidebar() {
       <div className="p-4">
         <Button
           variant="outline"
+          disabled={isLoggingOut}
+          onClick={handleLogout}
           className="w-full justify-center rounded-full border-sidebar-primary/40 text-sidebar-primary hover:bg-white/5"
         >
           <LogOut className="mr-1.5 h-4 w-4" /> Đăng xuất
