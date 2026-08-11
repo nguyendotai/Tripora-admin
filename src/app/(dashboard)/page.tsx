@@ -3,7 +3,6 @@ import { RecentUsersCard } from "@/modules/dashboard/components/recent-users-car
 import { SignupsChart } from "@/modules/dashboard/components/signups-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
 import { Header } from "@/shared/components/header";
-import { Sidebar } from "@/shared/components/sidebar";
 
 const STATS = [
   { icon: Users, label: "Người dùng", value: 0 },
@@ -14,8 +13,7 @@ const STATS = [
 
 export default function DashboardPage() {
   return (
-    <div className="pl-64">
-      <Sidebar />
+    <>
       <Header title="Dashboard" />
 
       <main className="p-6">
@@ -38,6 +36,6 @@ export default function DashboardPage() {
           <RecentUsersCard />
         </div>
       </main>
-    </div>
+    </>
   );
 }
