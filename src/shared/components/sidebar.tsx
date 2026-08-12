@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   BookOpen,
   LayoutDashboard,
   LogOut,
@@ -22,7 +23,10 @@ import { Logo } from "./logo";
 const NAV_GROUPS = [
   {
     label: "Tổng quan",
-    items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }],
+    items: [
+      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/reports", label: "Báo cáo", icon: BarChart3 },
+    ],
   },
   {
     label: "Quản lý nội dung",
