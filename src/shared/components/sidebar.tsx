@@ -6,6 +6,7 @@ import {
   LogOut,
   Map,
   MessageSquareText,
+  Newspaper,
   Search,
   Users,
 } from "lucide-react";
@@ -27,7 +28,8 @@ const NAV_GROUPS = [
     label: "Quản lý nội dung",
     items: [
       { href: "/destinations", label: "Điểm đến", icon: Map },
-      { href: "/guides", label: "Cẩm nang / Blog", icon: BookOpen },
+      { href: "/guides", label: "Cẩm nang", icon: BookOpen },
+      { href: "/blog", label: "Blog", icon: Newspaper },
       { href: "/reviews", label: "Đánh giá", icon: MessageSquareText },
     ],
   },
