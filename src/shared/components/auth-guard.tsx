@@ -33,7 +33,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (user && user.role !== "ADMIN") {
+    if (user && user.role !== "ADMIN" && !user.providerId) {
       dispatch(logout());
       router.replace("/login");
     }
