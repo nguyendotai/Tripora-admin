@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   Newspaper,
   Search,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -40,6 +41,10 @@ const NAV_GROUPS = [
   {
     label: "Người dùng",
     items: [{ href: "/users", label: "Users", icon: Users }],
+  },
+  {
+    label: "Đối tác",
+    items: [{ href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck }],
   },
 ];
 
