@@ -3,6 +3,7 @@
 import {
   BarChart3,
   BookOpen,
+  Building2,
   LayoutDashboard,
   LogOut,
   Map,
@@ -19,9 +20,10 @@ import { useLogoutMutation } from "@/features/auth/api/auth.api";
 import { clearSession } from "@/features/auth/services/auth-storage";
 import { logout } from "@/features/auth/store/auth.slice";
 import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
+import { useAppSelector } from "@/shared/hooks/use-app-selector";
 import { Logo } from "./logo";
 
-const NAV_GROUPS = [
+const ADMIN_NAV_GROUPS = [
   {
     label: "Tổng quan",
     items: [
@@ -44,7 +46,17 @@ const NAV_GROUPS = [
   },
   {
     label: "Đối tác",
-    items: [{ href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck }],
+    items: [
+      { href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck },
+      { href: "/properties", label: "Duyệt khách sạn", icon: Building2 },
+    ],
+  },
+];
+
+const PROVIDER_NAV_GROUPS = [
+  {
+    label: "Đối tác",
+    items: [{ href: "/my-properties", label: "Khách sạn của tôi", icon: Building2 }],
   },
 ];
 
@@ -52,7 +64,9 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
   const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
+  const navGroups = user?.role === "ADMIN" ? ADMIN_NAV_GROUPS : PROVIDER_NAV_GROUPS;
 
   const handleLogout = async () => {
     try {
@@ -79,7 +93,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-        {NAV_GROUPS.map((group) => (
+        {navGroups.map((group) => (
           <div key={group.label}>
             <p className="px-3 text-xs font-medium tracking-wider text-sidebar-foreground/40 uppercase">
               {group.label}
