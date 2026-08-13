@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { BedDouble, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -92,6 +92,15 @@ export default function MyPropertiesPage() {
                       <PropertyStatusBadge status={property.status} />
                     </TableCell>
                     <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full"
+                        title="Quản lý phòng"
+                        onClick={() => router.push(`/my-properties/${property.id}/rooms`)}
+                      >
+                        <BedDouble className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
