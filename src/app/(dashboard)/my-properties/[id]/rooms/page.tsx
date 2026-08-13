@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarRange, Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { useListMyRoomsQuery, useUpdateRoomMutation } from "@/features/room/api/
 import type { Room } from "@/features/room/types/room.types";
 import { DeleteRoomDialog } from "@/modules/room-management/components/delete-room-dialog";
 import { RoomFormDialog } from "@/modules/room-management/components/room-form-dialog";
+import { RoomInventoryDialog } from "@/modules/room-management/components/room-inventory-dialog";
 import { RoomStatusBadge } from "@/modules/room-management/components/room-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
@@ -40,6 +41,7 @@ export default function PropertyRoomsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Room | null>(null);
   const [deleting, setDeleting] = useState<Room | null>(null);
+  const [inventoryRoom, setInventoryRoom] = useState<Room | null>(null);
 
   useEffect(() => {
     if (user && !user.providerId) {
@@ -133,6 +135,15 @@ export default function PropertyRoomsPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-full"
+                        title="Tồn kho & giá theo ngày"
+                        onClick={() => setInventoryRoom(room)}
+                      >
+                        <CalendarRange className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full"
                         onClick={() => openEdit(room)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -165,6 +176,11 @@ export default function PropertyRoomsPage() {
         onOpenChange={(open) => !open && setDeleting(null)}
         propertyId={propertyId}
         room={deleting}
+      />
+      <RoomInventoryDialog
+        open={!!inventoryRoom}
+        onOpenChange={(open) => !open && setInventoryRoom(null)}
+        room={inventoryRoom}
       />
     </>
   );
