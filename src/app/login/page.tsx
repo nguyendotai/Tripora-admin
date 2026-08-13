@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLoginMutation } from "@/features/auth/api/auth.api";
 import { saveSession } from "@/features/auth/services/auth-storage";
-import { setCredentials } from "@/features/auth/store/auth.slice";
+import { logout, setCredentials } from "@/features/auth/store/auth.slice";
+import { useLazyGetMyProviderQuery } from "@/features/provider/api/provider.api";
 import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
 import { Logo } from "@/shared/components/logo";
 
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading, error }] = useLoginMutation();
+  const [getMyProvider, { isFetching: isCheckingProvider }] = useLazyGetMyProviderQuery();
   const [roleError, setRoleError] = useState(false);
 
   const {
@@ -37,14 +39,28 @@ export default function LoginPage() {
     setRoleError(false);
     const result = await login(values).unwrap();
 
-    if (result.user.role !== "ADMIN") {
-      setRoleError(true);
+    if (result.user.role === "ADMIN") {
+      dispatch(setCredentials(result));
+      saveSession(result.accessToken, result.user);
+      router.push("/");
       return;
     }
 
+    // Không phải ADMIN — thử xem có phải Provider đã được duyệt không.
     dispatch(setCredentials(result));
-    saveSession(result.accessToken, result.user);
-    router.push("/");
+    try {
+      const provider = await getMyProvider().unwrap();
+      if (provider.status !== "APPROVED") {
+        throw new Error("not approved");
+      }
+      const user = { ...result.user, providerId: provider.id };
+      dispatch(setCredentials({ accessToken: result.accessToken, user }));
+      saveSession(result.accessToken, user);
+      router.push("/my-properties");
+    } catch {
+      dispatch(logout());
+      setRoleError(true);
+    }
   };
 
   return (
@@ -87,8 +103,12 @@ export default function LoginPage() {
             </p>
           )}
 
-          <Button type="submit" disabled={isLoading} className="w-full rounded-full">
-            {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+          <Button
+            type="submit"
+            disabled={isLoading || isCheckingProvider}
+            className="w-full rounded-full"
+          >
+            {isLoading || isCheckingProvider ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
         </form>
       </div>
