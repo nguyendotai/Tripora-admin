@@ -1,5 +1,5 @@
 import { baseApi } from "@/shared/services/base-api";
-import type { PaginatedProviders, ProviderStatus } from "../types/provider.types";
+import type { PaginatedProviders, Provider, ProviderStatus } from "../types/provider.types";
 
 export interface ProviderListParams {
   status?: ProviderStatus;
@@ -9,6 +9,10 @@ export interface ProviderListParams {
 
 export const providerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getMyProvider: builder.query<Provider, void>({
+      query: () => "/providers/me",
+      providesTags: [{ type: "Provider", id: "ME" }],
+    }),
     listProviders: builder.query<PaginatedProviders, ProviderListParams | void>({
       query: (params) => ({ url: "/providers", params: params ?? undefined }),
       providesTags: (result) =>
@@ -36,4 +40,9 @@ export const providerApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useListProvidersQuery, useReviewProviderMutation } = providerApi;
+export const {
+  useGetMyProviderQuery,
+  useLazyGetMyProviderQuery,
+  useListProvidersQuery,
+  useReviewProviderMutation,
+} = providerApi;

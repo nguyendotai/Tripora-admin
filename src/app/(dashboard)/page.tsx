@@ -1,8 +1,13 @@
+"use client";
+
 import { BookOpen, Map, MessageSquareText, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { RecentUsersCard } from "@/modules/dashboard/components/recent-users-card";
 import { SignupsChart } from "@/modules/dashboard/components/signups-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
 import { Header } from "@/shared/components/header";
+import { useAppSelector } from "@/shared/hooks/use-app-selector";
 
 const STATS = [
   { icon: Users, label: "Người dùng", value: 0 },
@@ -12,6 +17,15 @@ const STATS = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user && user.role !== "ADMIN") {
+      router.replace("/my-properties");
+    }
+  }, [user, router]);
+
   return (
     <>
       <Header title="Dashboard" />

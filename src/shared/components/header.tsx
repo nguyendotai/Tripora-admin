@@ -8,6 +8,7 @@ import { ThemeToggle } from "./theme-toggle";
 export function Header({ title }: { title: string }) {
   const user = useAppSelector((state) => state.auth.user);
   const displayName = user?.firstName ?? user?.email ?? "Admin";
+  const roleLabel = user?.role === "ADMIN" ? "Quản trị viên" : "Đối tác";
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
@@ -25,7 +26,7 @@ export function Header({ title }: { title: string }) {
           </div>
           <div className="hidden text-sm leading-tight sm:block">
             <p className="font-medium">{displayName}</p>
-            <p className="text-xs text-muted-foreground">Quản trị viên</p>
+            <p className="text-xs text-muted-foreground">{roleLabel}</p>
           </div>
         </div>
       </div>
