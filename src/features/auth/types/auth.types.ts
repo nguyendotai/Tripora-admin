@@ -10,6 +10,8 @@ export interface AuthUser {
   providerId?: string;
   /** Cùng lúc với providerId — dùng để tách UI/redirect giữa Hotel Provider và Tour Operator. */
   providerType?: "HOTEL" | "TOUR" | "ACTIVITY" | "TRANSPORT" | "FLIGHT";
+  /** Gắn ở phía client nếu role != ADMIN, không có Provider profile, nhưng có hồ sơ Tour Guide. */
+  guideId?: string;
 }
 
 export interface AuthResponse {

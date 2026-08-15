@@ -66,6 +66,7 @@ export const baseApi = createApi({
     "TourItinerary",
     "TourSchedule",
     "TourBooking",
+    "TourGuide",
     "Experience",
     "ExperienceSchedule",
     "ExperienceBooking",
