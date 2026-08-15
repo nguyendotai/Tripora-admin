@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarRange, MapPinned, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarRange, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useListMyToursQuery } from "@/features/tour/api/tour.api";
-import type { Tour } from "@/features/tour/types/tour.types";
-import { DeleteTourDialog } from "@/modules/tour-management/components/delete-tour-dialog";
-import { TourFormDialog } from "@/modules/tour-management/components/tour-form-dialog";
-import { TourItineraryDialog } from "@/modules/tour-management/components/tour-itinerary-dialog";
-import { TourScheduleDialog } from "@/modules/tour-management/components/tour-schedule-dialog";
-import { TourStatusBadge } from "@/modules/tour-management/components/tour-status-badge";
+import { useListMyExperiencesQuery } from "@/features/experience/api/experience.api";
+import type { Experience } from "@/features/experience/types/experience.types";
+import { DeleteExperienceDialog } from "@/modules/experience-management/components/delete-experience-dialog";
+import { ExperienceFormDialog } from "@/modules/experience-management/components/experience-form-dialog";
+import { ExperienceScheduleDialog } from "@/modules/experience-management/components/experience-schedule-dialog";
+import { ExperienceStatusBadge } from "@/modules/experience-management/components/experience-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
 import { getProviderHomePath } from "@/shared/utils/provider-routes";
@@ -27,18 +26,17 @@ function formatPrice(price: string, currency: string) {
   return `${Number(price).toLocaleString("vi-VN")} ${currency}`;
 }
 
-export default function MyToursPage() {
+export default function MyExperiencesPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
-  const { data, isLoading, isError } = useListMyToursQuery();
+  const { data, isLoading, isError } = useListMyExperiencesQuery();
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Tour | null>(null);
-  const [deleting, setDeleting] = useState<Tour | null>(null);
-  const [itineraryTour, setItineraryTour] = useState<Tour | null>(null);
-  const [scheduleTour, setScheduleTour] = useState<Tour | null>(null);
+  const [editing, setEditing] = useState<Experience | null>(null);
+  const [deleting, setDeleting] = useState<Experience | null>(null);
+  const [scheduleExperience, setScheduleExperience] = useState<Experience | null>(null);
 
   useEffect(() => {
-    if (user && (!user.providerId || user.providerType !== "TOUR")) {
+    if (user && (!user.providerId || user.providerType !== "ACTIVITY")) {
       router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
     }
   }, [user, router]);
@@ -48,21 +46,21 @@ export default function MyToursPage() {
     setFormOpen(true);
   };
 
-  const openEdit = (tour: Tour) => {
-    setEditing(tour);
+  const openEdit = (experience: Experience) => {
+    setEditing(experience);
     setFormOpen(true);
   };
 
   return (
     <>
-      <Header title="Tour của tôi" />
+      <Header title="Experience của tôi" />
 
       <main className="p-6">
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border p-4">
-            <p className="font-semibold">Danh sách tour</p>
+            <p className="font-semibold">Danh sách experience</p>
             <Button size="sm" className="rounded-full" onClick={openCreate}>
-              <Plus className="mr-1.5 h-4 w-4" /> Thêm tour
+              <Plus className="mr-1.5 h-4 w-4" /> Thêm experience
             </Button>
           </div>
 
@@ -70,21 +68,21 @@ export default function MyToursPage() {
             <p className="p-6 text-sm text-muted-foreground">Đang tải...</p>
           ) : isError ? (
             <p className="p-6 text-sm text-destructive">
-              Không tải được danh sách tour. Kiểm tra Backend/kết nối MySQL.
+              Không tải được danh sách experience. Kiểm tra Backend/kết nối MySQL.
             </p>
           ) : !data || data.items.length === 0 ? (
             <div className="flex flex-col items-center gap-1 p-10 text-center">
-              <p className="text-sm font-medium">Bạn chưa có tour nào</p>
+              <p className="text-sm font-medium">Bạn chưa có experience nào</p>
               <p className="text-xs text-muted-foreground">
-                Bấm &quot;Thêm tour&quot; để tạo tour đầu tiên. Tour mới sẽ ở trạng thái chờ
-                duyệt trước khi hiển thị công khai.
+                Bấm &quot;Thêm experience&quot; để tạo experience đầu tiên. Experience mới sẽ ở
+                trạng thái chờ duyệt trước khi hiển thị công khai.
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên tour</TableHead>
+                  <TableHead>Tên experience</TableHead>
                   <TableHead>Thời lượng</TableHead>
                   <TableHead>Giá</TableHead>
                   <TableHead>Trạng thái</TableHead>
@@ -92,34 +90,25 @@ export default function MyToursPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.items.map((tour) => (
-                  <TableRow key={tour.id}>
-                    <TableCell className="font-medium">{tour.title}</TableCell>
+                {data.items.map((experience) => (
+                  <TableRow key={experience.id}>
+                    <TableCell className="font-medium">{experience.title}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {tour.durationLabel ?? "—"}
+                      {experience.durationLabel ?? "—"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatPrice(tour.price, tour.currency)}
+                      {formatPrice(experience.price, experience.currency)}
                     </TableCell>
                     <TableCell>
-                      <TourStatusBadge status={tour.status} />
+                      <ExperienceStatusBadge status={experience.status} />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="rounded-full"
-                        title="Lịch trình"
-                        onClick={() => setItineraryTour(tour)}
-                      >
-                        <MapPinned className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full"
                         title="Ngày khởi hành"
-                        onClick={() => setScheduleTour(tour)}
+                        onClick={() => setScheduleExperience(experience)}
                       >
                         <CalendarRange className="h-4 w-4" />
                       </Button>
@@ -127,7 +116,7 @@ export default function MyToursPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-full"
-                        onClick={() => openEdit(tour)}
+                        onClick={() => openEdit(experience)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -135,7 +124,7 @@ export default function MyToursPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-full text-destructive hover:text-destructive"
-                        onClick={() => setDeleting(tour)}
+                        onClick={() => setDeleting(experience)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -148,21 +137,16 @@ export default function MyToursPage() {
         </div>
       </main>
 
-      <TourFormDialog open={formOpen} onOpenChange={setFormOpen} tour={editing} />
-      <DeleteTourDialog
+      <ExperienceFormDialog open={formOpen} onOpenChange={setFormOpen} experience={editing} />
+      <DeleteExperienceDialog
         open={!!deleting}
         onOpenChange={(open) => !open && setDeleting(null)}
-        tour={deleting}
+        experience={deleting}
       />
-      <TourItineraryDialog
-        open={!!itineraryTour}
-        onOpenChange={(open) => !open && setItineraryTour(null)}
-        tour={itineraryTour}
-      />
-      <TourScheduleDialog
-        open={!!scheduleTour}
-        onOpenChange={(open) => !open && setScheduleTour(null)}
-        tour={scheduleTour}
+      <ExperienceScheduleDialog
+        open={!!scheduleExperience}
+        onOpenChange={(open) => !open && setScheduleExperience(null)}
+        experience={scheduleExperience}
       />
     </>
   );

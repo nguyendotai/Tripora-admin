@@ -19,6 +19,7 @@ import { PropertyFormDialog } from "@/modules/property-management/components/pro
 import { PropertyStatusBadge } from "@/modules/property-management/components/property-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 
 export default function MyPropertiesPage() {
   const router = useRouter();
@@ -29,8 +30,8 @@ export default function MyPropertiesPage() {
   const [deleting, setDeleting] = useState<Property | null>(null);
 
   useEffect(() => {
-    if (user && (!user.providerId || user.providerType === "TOUR")) {
-      router.replace(user?.providerType === "TOUR" ? "/my-tours" : "/");
+    if (user && (!user.providerId || user.providerType !== "HOTEL")) {
+      router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
     }
   }, [user, router]);
 
