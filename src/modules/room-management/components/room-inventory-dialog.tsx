@@ -103,13 +103,13 @@ export function RoomInventoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>Tồn kho & giá theo ngày — {room?.name}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="startDate">Từ ngày</Label>
               <Input id="startDate" type="date" {...register("startDate")} />
