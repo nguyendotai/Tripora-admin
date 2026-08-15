@@ -37,6 +37,24 @@ export const providerApi = baseApi.injectEndpoints({
         { type: "Provider", id: "LIST" },
       ],
     }),
+    suspendProvider: builder.mutation<void, { id: string; reason?: string }>({
+      query: ({ id, reason }) => ({
+        url: `/providers/${id}/suspend`,
+        method: "PATCH",
+        body: { reason },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Provider", id },
+        { type: "Provider", id: "LIST" },
+      ],
+    }),
+    unsuspendProvider: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({ url: `/providers/${id}/unsuspend`, method: "PATCH" }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Provider", id },
+        { type: "Provider", id: "LIST" },
+      ],
+    }),
   }),
 });
 
@@ -45,4 +63,6 @@ export const {
   useLazyGetMyProviderQuery,
   useListProvidersQuery,
   useReviewProviderMutation,
+  useSuspendProviderMutation,
+  useUnsuspendProviderMutation,
 } = providerApi;
