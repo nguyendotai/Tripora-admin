@@ -91,7 +91,7 @@ export function PropertyFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[864px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Sửa khách sạn" : "Thêm khách sạn"}</DialogTitle>
         </DialogHeader>
