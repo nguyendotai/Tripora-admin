@@ -14,6 +14,7 @@ import { logout, setCredentials } from "@/features/auth/store/auth.slice";
 import { useLazyGetMyProviderQuery } from "@/features/provider/api/provider.api";
 import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
 import { Logo } from "@/shared/components/logo";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 
 const loginSchema = z.object({
   email: z.email("Email không hợp lệ"),
@@ -56,7 +57,7 @@ export default function LoginPage() {
       const user = { ...result.user, providerId: provider.id, providerType: provider.type };
       dispatch(setCredentials({ accessToken: result.accessToken, user }));
       saveSession(result.accessToken, user);
-      router.push(provider.type === "TOUR" ? "/my-tours" : "/my-properties");
+      router.push(getProviderHomePath(provider.type));
     } catch {
       dispatch(logout());
       setRoleError(true);

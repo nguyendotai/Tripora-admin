@@ -15,6 +15,7 @@ import type { TourBookingStatus } from "@/features/tour-booking/types/tour-booki
 import { BookingStatusBadge } from "@/modules/booking-management/components/booking-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 import { cn } from "@/lib/utils";
 
 const FILTERS: { label: string; value: TourBookingStatus | undefined }[] = [
@@ -39,7 +40,7 @@ export default function TourBookingsPage() {
 
   useEffect(() => {
     if (user && user.role !== "ADMIN") {
-      router.replace(user.providerType === "TOUR" ? "/my-tours" : "/my-properties");
+      router.replace(getProviderHomePath(user.providerType));
     }
   }, [user, router]);
 

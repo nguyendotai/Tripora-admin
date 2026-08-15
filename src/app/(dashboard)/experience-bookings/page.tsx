@@ -10,21 +10,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useListMyProviderTourBookingsQuery } from "@/features/tour-booking/api/tour-booking.api";
-import { useListMyToursQuery } from "@/features/tour/api/tour.api";
+import { useListAllExperienceBookingsQuery } from "@/features/experience-booking/api/experience-booking.api";
+import type { ExperienceBookingStatus } from "@/features/experience-booking/types/experience-booking.types";
 import { BookingStatusBadge } from "@/modules/booking-management/components/booking-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
 import { getProviderHomePath } from "@/shared/utils/provider-routes";
 import { cn } from "@/lib/utils";
 
-type StatusFilter = "upcoming" | "completed" | "cancelled" | undefined;
-
-const FILTERS: { label: string; value: StatusFilter }[] = [
+const FILTERS: { label: string; value: ExperienceBookingStatus | undefined }[] = [
   { label: "Tất cả", value: undefined },
-  { label: "Sắp tới", value: "upcoming" },
-  { label: "Đã hoàn thành", value: "completed" },
-  { label: "Đã huỷ", value: "cancelled" },
+  { label: "Đã xác nhận", value: "CONFIRMED" },
+  { label: "Đã huỷ", value: "CANCELLED" },
 ];
 
 function formatDate(value: string) {
@@ -35,64 +32,42 @@ function formatPrice(price: string, currency: string) {
   return `${Number(price).toLocaleString("vi-VN")} ${currency}`;
 }
 
-export default function MyTourBookingsPage() {
+export default function ExperienceBookingsPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
-  const [status, setStatus] = useState<StatusFilter>(undefined);
-  const [tourId, setTourId] = useState<string | undefined>(undefined);
-
-  const { data: tours } = useListMyToursQuery();
-  const { data: bookings, isLoading, isError } = useListMyProviderTourBookingsQuery({
-    status,
-    tourId,
-  });
+  const [status, setStatus] = useState<ExperienceBookingStatus | undefined>(undefined);
+  const { data, isLoading, isError } = useListAllExperienceBookingsQuery({ status, limit: 50 });
 
   useEffect(() => {
-    if (user && (!user.providerId || user.providerType !== "TOUR")) {
-      router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
+    if (user && user.role !== "ADMIN") {
+      router.replace(getProviderHomePath(user.providerType));
     }
   }, [user, router]);
 
   return (
     <>
-      <Header title="Đặt tour của tôi" />
+      <Header title="Đặt experience" />
 
       <main className="p-6">
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border p-4">
-            <p className="font-semibold">Đơn đặt tour của tôi</p>
-            <div className="flex flex-wrap items-center gap-3">
-              {tours && tours.items.length > 1 && (
-                <select
-                  value={tourId ?? ""}
-                  onChange={(e) => setTourId(e.target.value || undefined)}
-                  className="h-8 rounded-full border border-border bg-background px-3 text-xs"
+          <div className="flex items-center justify-between gap-4 border-b border-border p-4">
+            <p className="font-semibold">Toàn bộ đơn đặt experience</p>
+            <div className="flex gap-1.5">
+              {FILTERS.map((filter) => (
+                <button
+                  key={filter.label}
+                  type="button"
+                  onClick={() => setStatus(filter.value)}
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                    status === filter.value
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+                  )}
                 >
-                  <option value="">Tất cả tour</option>
-                  {tours.items.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.title}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <div className="flex gap-1.5">
-                {FILTERS.map((filter) => (
-                  <button
-                    key={filter.label}
-                    type="button"
-                    onClick={() => setStatus(filter.value)}
-                    className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                      status === filter.value
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-                    )}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
+                  {filter.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -100,18 +75,18 @@ export default function MyTourBookingsPage() {
             <p className="p-6 text-sm text-muted-foreground">Đang tải...</p>
           ) : isError ? (
             <p className="p-6 text-sm text-destructive">
-              Không tải được danh sách đặt tour. Kiểm tra Backend/kết nối MySQL.
+              Không tải được danh sách đặt experience. Kiểm tra Backend/kết nối MySQL.
             </p>
-          ) : !bookings || bookings.length === 0 ? (
+          ) : !data || data.items.length === 0 ? (
             <div className="flex flex-col items-center gap-1 p-10 text-center">
-              <p className="text-sm font-medium">Chưa có đơn đặt tour nào</p>
+              <p className="text-sm font-medium">Chưa có đơn đặt experience nào</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Tài khoản</TableHead>
-                  <TableHead>Tour</TableHead>
+                  <TableHead>Experience</TableHead>
                   <TableHead>Khách liên hệ</TableHead>
                   <TableHead>Ngày khởi hành</TableHead>
                   <TableHead>Số người</TableHead>
@@ -120,7 +95,7 @@ export default function MyTourBookingsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bookings.map((booking) => (
+                {data.items.map((booking) => (
                   <TableRow key={booking.id}>
                     <TableCell>
                       <p className="font-medium">
@@ -129,7 +104,7 @@ export default function MyTourBookingsPage() {
                       </p>
                       <p className="text-xs text-muted-foreground">{booking.user.email}</p>
                     </TableCell>
-                    <TableCell className="font-medium">{booking.tourTitle}</TableCell>
+                    <TableCell className="font-medium">{booking.experienceTitle}</TableCell>
                     <TableCell>
                       <p>{booking.customerName}</p>
                       <p className="text-xs text-muted-foreground">
