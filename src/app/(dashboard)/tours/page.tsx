@@ -18,6 +18,7 @@ import { ReviewTourDialog } from "@/modules/tour-management/components/review-to
 import { TourStatusBadge } from "@/modules/tour-management/components/tour-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 import { cn } from "@/lib/utils";
 
 const FILTERS: { label: string; value: TourStatus | undefined }[] = [
@@ -40,7 +41,7 @@ export default function ToursManagementPage() {
 
   useEffect(() => {
     if (user && user.role !== "ADMIN") {
-      router.replace(user.providerType === "TOUR" ? "/my-tours" : "/my-properties");
+      router.replace(getProviderHomePath(user.providerType));
     }
   }, [user, router]);
 
