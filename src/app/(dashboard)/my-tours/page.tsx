@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { MapPinned, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { useListMyToursQuery } from "@/features/tour/api/tour.api";
 import type { Tour } from "@/features/tour/types/tour.types";
 import { DeleteTourDialog } from "@/modules/tour-management/components/delete-tour-dialog";
 import { TourFormDialog } from "@/modules/tour-management/components/tour-form-dialog";
+import { TourItineraryDialog } from "@/modules/tour-management/components/tour-itinerary-dialog";
 import { TourStatusBadge } from "@/modules/tour-management/components/tour-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
@@ -31,6 +32,7 @@ export default function MyToursPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Tour | null>(null);
   const [deleting, setDeleting] = useState<Tour | null>(null);
+  const [itineraryTour, setItineraryTour] = useState<Tour | null>(null);
 
   useEffect(() => {
     if (user && (!user.providerId || user.providerType !== "TOUR")) {
@@ -104,6 +106,15 @@ export default function MyToursPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-full"
+                        title="Lịch trình"
+                        onClick={() => setItineraryTour(tour)}
+                      >
+                        <MapPinned className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full"
                         onClick={() => openEdit(tour)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -130,6 +141,11 @@ export default function MyToursPage() {
         open={!!deleting}
         onOpenChange={(open) => !open && setDeleting(null)}
         tour={deleting}
+      />
+      <TourItineraryDialog
+        open={!!itineraryTour}
+        onOpenChange={(open) => !open && setItineraryTour(null)}
+        tour={itineraryTour}
       />
     </>
   );
