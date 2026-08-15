@@ -4,6 +4,7 @@ import {
   BarChart3,
   BookOpen,
   Building2,
+  CalendarCheck,
   LayoutDashboard,
   LogOut,
   Map,
@@ -50,6 +51,10 @@ const ADMIN_NAV_GROUPS = [
       { href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck },
       { href: "/properties", label: "Duyệt khách sạn", icon: Building2 },
     ],
+  },
+  {
+    label: "Đặt phòng",
+    items: [{ href: "/bookings", label: "Đặt phòng", icon: CalendarCheck }],
   },
 ];
 
