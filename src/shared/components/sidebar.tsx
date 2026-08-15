@@ -61,7 +61,10 @@ const ADMIN_NAV_GROUPS = [
 const PROVIDER_NAV_GROUPS = [
   {
     label: "Đối tác",
-    items: [{ href: "/my-properties", label: "Khách sạn của tôi", icon: Building2 }],
+    items: [
+      { href: "/my-properties", label: "Khách sạn của tôi", icon: Building2 },
+      { href: "/my-bookings", label: "Đặt phòng của tôi", icon: CalendarCheck },
+    ],
   },
 ];
 
