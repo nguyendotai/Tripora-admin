@@ -55,8 +55,11 @@ const ADMIN_NAV_GROUPS = [
     ],
   },
   {
-    label: "Đặt phòng",
-    items: [{ href: "/bookings", label: "Đặt phòng", icon: CalendarCheck }],
+    label: "Đặt chỗ",
+    items: [
+      { href: "/bookings", label: "Đặt phòng", icon: CalendarCheck },
+      { href: "/tour-bookings", label: "Đặt tour", icon: CalendarCheck },
+    ],
   },
 ];
 
@@ -73,7 +76,10 @@ const HOTEL_PROVIDER_NAV_GROUPS = [
 const TOUR_PROVIDER_NAV_GROUPS = [
   {
     label: "Đối tác",
-    items: [{ href: "/my-tours", label: "Tour của tôi", icon: Compass }],
+    items: [
+      { href: "/my-tours", label: "Tour của tôi", icon: Compass },
+      { href: "/my-tour-bookings", label: "Đặt tour của tôi", icon: CalendarCheck },
+    ],
   },
 ];
 
