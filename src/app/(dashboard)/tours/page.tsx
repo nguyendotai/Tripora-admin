@@ -12,27 +12,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useListPropertiesForModerationQuery } from "@/features/property/api/property.api";
-import type { Property, PropertyStatus } from "@/features/property/types/property.types";
-import { PropertyStatusBadge } from "@/modules/property-management/components/property-status-badge";
-import { ReviewPropertyDialog } from "@/modules/property-management/components/review-property-dialog";
+import { useListToursForModerationQuery } from "@/features/tour/api/tour.api";
+import type { Tour, TourStatus } from "@/features/tour/types/tour.types";
+import { ReviewTourDialog } from "@/modules/tour-management/components/review-tour-dialog";
+import { TourStatusBadge } from "@/modules/tour-management/components/tour-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
 import { cn } from "@/lib/utils";
 
-const FILTERS: { label: string; value: PropertyStatus | undefined }[] = [
+const FILTERS: { label: string; value: TourStatus | undefined }[] = [
   { label: "Chờ duyệt", value: "PENDING" },
   { label: "Đã duyệt", value: "APPROVED" },
   { label: "Đã từ chối", value: "REJECTED" },
   { label: "Tất cả", value: undefined },
 ];
 
-export default function PropertiesManagementPage() {
+function formatPrice(price: string, currency: string) {
+  return `${Number(price).toLocaleString("vi-VN")} ${currency}`;
+}
+
+export default function ToursManagementPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
-  const [status, setStatus] = useState<PropertyStatus | undefined>("PENDING");
-  const { data, isLoading, isError } = useListPropertiesForModerationQuery({ status, limit: 50 });
-  const [reviewing, setReviewing] = useState<Property | null>(null);
+  const [status, setStatus] = useState<TourStatus | undefined>("PENDING");
+  const { data, isLoading, isError } = useListToursForModerationQuery({ status, limit: 50 });
+  const [reviewing, setReviewing] = useState<Tour | null>(null);
 
   useEffect(() => {
     if (user && user.role !== "ADMIN") {
@@ -42,12 +46,12 @@ export default function PropertiesManagementPage() {
 
   return (
     <>
-      <Header title="Khách sạn" />
+      <Header title="Tour" />
 
       <main className="p-6">
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
           <div className="flex items-center justify-between gap-4 border-b border-border p-4">
-            <p className="font-semibold">Duyệt khách sạn</p>
+            <p className="font-semibold">Duyệt tour</p>
             <div className="flex gap-1.5">
               {FILTERS.map((filter) => (
                 <button
@@ -71,38 +75,40 @@ export default function PropertiesManagementPage() {
             <p className="p-6 text-sm text-muted-foreground">Đang tải...</p>
           ) : isError ? (
             <p className="p-6 text-sm text-destructive">
-              Không tải được danh sách khách sạn. Kiểm tra Backend/kết nối MySQL.
+              Không tải được danh sách tour. Kiểm tra Backend/kết nối MySQL.
             </p>
           ) : !data || data.items.length === 0 ? (
             <div className="flex flex-col items-center gap-1 p-10 text-center">
-              <p className="text-sm font-medium">Không có khách sạn nào</p>
+              <p className="text-sm font-medium">Không có tour nào</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên khách sạn</TableHead>
+                  <TableHead>Tên tour</TableHead>
                   <TableHead>Đối tác</TableHead>
+                  <TableHead>Giá</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.items.map((property) => (
-                  <TableRow key={property.id}>
-                    <TableCell className="font-medium">{property.name}</TableCell>
+                {data.items.map((tour) => (
+                  <TableRow key={tour.id}>
+                    <TableCell className="font-medium">{tour.title}</TableCell>
+                    <TableCell className="text-muted-foreground">{tour.provider?.name}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {property.provider?.name}
+                      {formatPrice(tour.price, tour.currency)}
                     </TableCell>
                     <TableCell>
-                      <PropertyStatusBadge status={property.status} />
+                      <TourStatusBadge status={tour.status} />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="rounded-full"
-                        onClick={() => setReviewing(property)}
+                        onClick={() => setReviewing(tour)}
                       >
                         <ShieldCheck className="h-4 w-4" />
                       </Button>
@@ -115,10 +121,10 @@ export default function PropertiesManagementPage() {
         </div>
       </main>
 
-      <ReviewPropertyDialog
+      <ReviewTourDialog
         open={!!reviewing}
         onOpenChange={(open) => !open && setReviewing(null)}
-        property={reviewing}
+        tour={reviewing}
       />
     </>
   );
