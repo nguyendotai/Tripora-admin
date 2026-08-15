@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateRoomMutation, useUpdateRoomMutation } from "@/features/room/api/room.api";
 import type { Room } from "@/features/room/types/room.types";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 
 const formSchema = z.object({
   name: z.string().min(1, "Vui lòng nhập tên loại phòng"),
@@ -44,6 +45,7 @@ export function RoomFormDialog({
   const [createRoom, { isLoading: isCreating }] = useCreateRoomMutation();
   const [updateRoom, { isLoading: isUpdating }] = useUpdateRoomMutation();
   const isLoading = isCreating || isUpdating;
+  const [images, setImages] = useState<string[]>([]);
 
   const {
     register,
@@ -62,6 +64,7 @@ export function RoomFormDialog({
         basePrice: room?.basePrice ?? "",
         amenities: room?.amenities?.join(", ") ?? "",
       });
+      setImages(room?.images ?? []);
     }
   }, [open, room, reset]);
 
@@ -75,6 +78,7 @@ export function RoomFormDialog({
       amenities: values.amenities
         ? values.amenities.split(",").map((a) => a.trim()).filter(Boolean)
         : undefined,
+      images: images.length > 0 ? images : undefined,
     };
 
     if (isEdit && room) {
@@ -123,6 +127,11 @@ export function RoomFormDialog({
               <Label htmlFor="amenities">Tiện ích (cách nhau bằng dấu phẩy)</Label>
               <Input id="amenities" placeholder="wifi, tv, điều hoà" {...register("amenities")} />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Hình ảnh</Label>
+            <ImageUploadField images={images} onChange={setImages} />
           </div>
 
           <div className="space-y-1.5">

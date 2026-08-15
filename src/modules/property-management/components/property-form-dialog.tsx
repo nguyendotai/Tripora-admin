@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useListDestinationsQuery } from "@/features/destination/api/destination.api";
 import { useCreatePropertyMutation, useUpdatePropertyMutation } from "@/features/property/api/property.api";
 import type { Property } from "@/features/property/types/property.types";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 
 const formSchema = z.object({
   name: z.string().min(1, "Vui lòng nhập tên khách sạn"),
@@ -45,6 +46,7 @@ export function PropertyFormDialog({
   const [updateProperty, { isLoading: isUpdating }] = useUpdatePropertyMutation();
   const { data: destinations } = useListDestinationsQuery({ limit: 100 });
   const isLoading = isCreating || isUpdating;
+  const [images, setImages] = useState<string[]>([]);
 
   const {
     register,
@@ -64,6 +66,7 @@ export function PropertyFormDialog({
         checkOutTime: property?.checkOutTime ?? "",
         amenities: property?.amenities?.join(", ") ?? "",
       });
+      setImages(property?.images ?? []);
     }
   }, [open, property, reset]);
 
@@ -78,6 +81,7 @@ export function PropertyFormDialog({
       amenities: values.amenities
         ? values.amenities.split(",").map((a) => a.trim()).filter(Boolean)
         : undefined,
+      images: images.length > 0 ? images : undefined,
     };
 
     if (isEdit && property) {
@@ -139,6 +143,11 @@ export function PropertyFormDialog({
           <div className="space-y-1.5">
             <Label htmlFor="amenities">Tiện ích (cách nhau bằng dấu phẩy)</Label>
             <Input id="amenities" placeholder="wifi, hồ bơi, bãi đỗ xe" {...register("amenities")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Hình ảnh</Label>
+            <ImageUploadField images={images} onChange={setImages} />
           </div>
 
           <div className="space-y-1.5">
