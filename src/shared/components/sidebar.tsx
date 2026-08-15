@@ -13,6 +13,7 @@ import {
   Newspaper,
   Search,
   ShieldCheck,
+  Ticket,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -52,6 +53,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck },
       { href: "/properties", label: "Duyệt khách sạn", icon: Building2 },
       { href: "/tours", label: "Duyệt tour", icon: Compass },
+      { href: "/experiences", label: "Duyệt experience", icon: Ticket },
     ],
   },
   {
@@ -59,6 +61,7 @@ const ADMIN_NAV_GROUPS = [
     items: [
       { href: "/bookings", label: "Đặt phòng", icon: CalendarCheck },
       { href: "/tour-bookings", label: "Đặt tour", icon: CalendarCheck },
+      { href: "/experience-bookings", label: "Đặt experience", icon: CalendarCheck },
     ],
   },
 ];
@@ -83,6 +86,16 @@ const TOUR_PROVIDER_NAV_GROUPS = [
   },
 ];
 
+const EXPERIENCE_PROVIDER_NAV_GROUPS = [
+  {
+    label: "Đối tác",
+    items: [
+      { href: "/my-experiences", label: "Experience của tôi", icon: Ticket },
+      { href: "/my-experience-bookings", label: "Đặt experience của tôi", icon: CalendarCheck },
+    ],
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -94,7 +107,9 @@ export function Sidebar() {
       ? ADMIN_NAV_GROUPS
       : user?.providerType === "TOUR"
         ? TOUR_PROVIDER_NAV_GROUPS
-        : HOTEL_PROVIDER_NAV_GROUPS;
+        : user?.providerType === "ACTIVITY"
+          ? EXPERIENCE_PROVIDER_NAV_GROUPS
+          : HOTEL_PROVIDER_NAV_GROUPS;
 
   const handleLogout = async () => {
     try {

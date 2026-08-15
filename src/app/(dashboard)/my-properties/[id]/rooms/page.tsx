@@ -21,6 +21,7 @@ import { RoomInventoryDialog } from "@/modules/room-management/components/room-i
 import { RoomStatusBadge } from "@/modules/room-management/components/room-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 
 function formatPrice(price: string, currency: string) {
   const value = Number(price);
@@ -44,8 +45,8 @@ export default function PropertyRoomsPage() {
   const [inventoryRoom, setInventoryRoom] = useState<Room | null>(null);
 
   useEffect(() => {
-    if (user && !user.providerId) {
-      router.replace("/");
+    if (user && (!user.providerId || user.providerType !== "HOTEL")) {
+      router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
     }
   }, [user, router]);
 

@@ -15,6 +15,7 @@ import { useListMyPropertiesQuery } from "@/features/property/api/property.api";
 import { BookingStatusBadge } from "@/modules/booking-management/components/booking-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
 import { cn } from "@/lib/utils";
 
 type StatusFilter = "upcoming" | "completed" | "cancelled" | undefined;
@@ -47,8 +48,8 @@ export default function MyBookingsPage() {
   });
 
   useEffect(() => {
-    if (user && !user.providerId) {
-      router.replace("/");
+    if (user && (!user.providerId || user.providerType !== "HOTEL")) {
+      router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
     }
   }, [user, router]);
 

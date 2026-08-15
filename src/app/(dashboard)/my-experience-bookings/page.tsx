@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useListMyProviderTourBookingsQuery } from "@/features/tour-booking/api/tour-booking.api";
-import { useListMyToursQuery } from "@/features/tour/api/tour.api";
+import { useListMyProviderExperienceBookingsQuery } from "@/features/experience-booking/api/experience-booking.api";
+import { useListMyExperiencesQuery } from "@/features/experience/api/experience.api";
 import { BookingStatusBadge } from "@/modules/booking-management/components/booking-status-badge";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
@@ -35,43 +35,43 @@ function formatPrice(price: string, currency: string) {
   return `${Number(price).toLocaleString("vi-VN")} ${currency}`;
 }
 
-export default function MyTourBookingsPage() {
+export default function MyExperienceBookingsPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
   const [status, setStatus] = useState<StatusFilter>(undefined);
-  const [tourId, setTourId] = useState<string | undefined>(undefined);
+  const [experienceId, setExperienceId] = useState<string | undefined>(undefined);
 
-  const { data: tours } = useListMyToursQuery();
-  const { data: bookings, isLoading, isError } = useListMyProviderTourBookingsQuery({
+  const { data: experiences } = useListMyExperiencesQuery();
+  const { data: bookings, isLoading, isError } = useListMyProviderExperienceBookingsQuery({
     status,
-    tourId,
+    experienceId,
   });
 
   useEffect(() => {
-    if (user && (!user.providerId || user.providerType !== "TOUR")) {
+    if (user && (!user.providerId || user.providerType !== "ACTIVITY")) {
       router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
     }
   }, [user, router]);
 
   return (
     <>
-      <Header title="Đặt tour của tôi" />
+      <Header title="Đặt experience của tôi" />
 
       <main className="p-6">
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border p-4">
-            <p className="font-semibold">Đơn đặt tour của tôi</p>
+            <p className="font-semibold">Đơn đặt experience của tôi</p>
             <div className="flex flex-wrap items-center gap-3">
-              {tours && tours.items.length > 1 && (
+              {experiences && experiences.items.length > 1 && (
                 <select
-                  value={tourId ?? ""}
-                  onChange={(e) => setTourId(e.target.value || undefined)}
+                  value={experienceId ?? ""}
+                  onChange={(e) => setExperienceId(e.target.value || undefined)}
                   className="h-8 rounded-full border border-border bg-background px-3 text-xs"
                 >
-                  <option value="">Tất cả tour</option>
-                  {tours.items.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.title}
+                  <option value="">Tất cả experience</option>
+                  {experiences.items.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.title}
                     </option>
                   ))}
                 </select>
@@ -100,18 +100,18 @@ export default function MyTourBookingsPage() {
             <p className="p-6 text-sm text-muted-foreground">Đang tải...</p>
           ) : isError ? (
             <p className="p-6 text-sm text-destructive">
-              Không tải được danh sách đặt tour. Kiểm tra Backend/kết nối MySQL.
+              Không tải được danh sách đặt experience. Kiểm tra Backend/kết nối MySQL.
             </p>
           ) : !bookings || bookings.length === 0 ? (
             <div className="flex flex-col items-center gap-1 p-10 text-center">
-              <p className="text-sm font-medium">Chưa có đơn đặt tour nào</p>
+              <p className="text-sm font-medium">Chưa có đơn đặt experience nào</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Tài khoản</TableHead>
-                  <TableHead>Tour</TableHead>
+                  <TableHead>Experience</TableHead>
                   <TableHead>Khách liên hệ</TableHead>
                   <TableHead>Ngày khởi hành</TableHead>
                   <TableHead>Số người</TableHead>
@@ -129,7 +129,7 @@ export default function MyTourBookingsPage() {
                       </p>
                       <p className="text-xs text-muted-foreground">{booking.user.email}</p>
                     </TableCell>
-                    <TableCell className="font-medium">{booking.tourTitle}</TableCell>
+                    <TableCell className="font-medium">{booking.experienceTitle}</TableCell>
                     <TableCell>
                       <p>{booking.customerName}</p>
                       <p className="text-xs text-muted-foreground">
