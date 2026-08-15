@@ -6,6 +6,7 @@ import {
   Building2,
   CalendarCheck,
   Compass,
+  Footprints,
   LayoutDashboard,
   LogOut,
   Map,
@@ -14,6 +15,8 @@ import {
   Search,
   ShieldCheck,
   Ticket,
+  UserCircle,
+  UserCog,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -81,7 +84,18 @@ const TOUR_PROVIDER_NAV_GROUPS = [
     label: "Đối tác",
     items: [
       { href: "/my-tours", label: "Tour của tôi", icon: Compass },
+      { href: "/my-guides", label: "Hướng dẫn viên", icon: UserCog },
       { href: "/my-tour-bookings", label: "Đặt tour của tôi", icon: CalendarCheck },
+    ],
+  },
+];
+
+const GUIDE_NAV_GROUPS = [
+  {
+    label: "Hướng dẫn viên",
+    items: [
+      { href: "/guide-schedule", label: "Lịch dẫn tour", icon: Footprints },
+      { href: "/guide-profile", label: "Hồ sơ của tôi", icon: UserCircle },
     ],
   },
 ];
@@ -109,7 +123,11 @@ export function Sidebar() {
         ? TOUR_PROVIDER_NAV_GROUPS
         : user?.providerType === "ACTIVITY"
           ? EXPERIENCE_PROVIDER_NAV_GROUPS
-          : HOTEL_PROVIDER_NAV_GROUPS;
+          : user?.providerId
+            ? HOTEL_PROVIDER_NAV_GROUPS
+            : user?.guideId
+              ? GUIDE_NAV_GROUPS
+              : HOTEL_PROVIDER_NAV_GROUPS;
 
   const handleLogout = async () => {
     try {

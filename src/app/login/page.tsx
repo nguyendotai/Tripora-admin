@@ -12,9 +12,11 @@ import { useLoginMutation } from "@/features/auth/api/auth.api";
 import { saveSession } from "@/features/auth/services/auth-storage";
 import { logout, setCredentials } from "@/features/auth/store/auth.slice";
 import { useLazyGetMyProviderQuery } from "@/features/provider/api/provider.api";
+import { useLazyGetMyGuideProfileQuery } from "@/features/tour-guide/api/tour-guide.api";
 import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
 import { Logo } from "@/shared/components/logo";
 import { getProviderHomePath } from "@/shared/utils/provider-routes";
+import { GUIDE_HOME_PATH } from "@/shared/utils/guide-routes";
 
 const loginSchema = z.object({
   email: z.email("Email không hợp lệ"),
@@ -28,6 +30,7 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const [login, { isLoading, error }] = useLoginMutation();
   const [getMyProvider, { isFetching: isCheckingProvider }] = useLazyGetMyProviderQuery();
+  const [getMyGuideProfile, { isFetching: isCheckingGuide }] = useLazyGetMyGuideProfileQuery();
   const [roleError, setRoleError] = useState(false);
 
   const {
@@ -58,6 +61,17 @@ export default function LoginPage() {
       dispatch(setCredentials({ accessToken: result.accessToken, user }));
       saveSession(result.accessToken, user);
       router.push(getProviderHomePath(provider.type));
+      return;
+    } catch {
+      // Không phải Provider — thử xem có phải Tour Guide không.
+    }
+
+    try {
+      const guide = await getMyGuideProfile().unwrap();
+      const user = { ...result.user, guideId: guide.id };
+      dispatch(setCredentials({ accessToken: result.accessToken, user }));
+      saveSession(result.accessToken, user);
+      router.push(GUIDE_HOME_PATH);
     } catch {
       dispatch(logout());
       setRoleError(true);
@@ -106,10 +120,10 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            disabled={isLoading || isCheckingProvider}
+            disabled={isLoading || isCheckingProvider || isCheckingGuide}
             className="w-full rounded-full"
           >
-            {isLoading || isCheckingProvider ? "Đang đăng nhập..." : "Đăng nhập"}
+            {isLoading || isCheckingProvider || isCheckingGuide ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
         </form>
       </div>

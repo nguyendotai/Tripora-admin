@@ -6,6 +6,7 @@ export interface TourSchedule {
   available: number;
   booked: number;
   price?: string | null;
+  guideId?: string | null;
   createdAt: string;
   updatedAt: string;
 }

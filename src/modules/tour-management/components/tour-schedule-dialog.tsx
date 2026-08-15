@@ -26,6 +26,7 @@ import {
   useListMyTourScheduleQuery,
   useSetTourScheduleMutation,
 } from "@/features/tour-schedule/api/tour-schedule.api";
+import { useAssignGuideMutation, useListMyGuidesQuery } from "@/features/tour-guide/api/tour-guide.api";
 import type { Tour } from "@/features/tour/types/tour.types";
 
 function toDateInput(date: Date) {
@@ -76,6 +77,12 @@ export function TourScheduleDialog({
   );
 
   const [setTourSchedule, { isLoading: isSaving }] = useSetTourScheduleMutation();
+  const { data: guides } = useListMyGuidesQuery();
+  const [assignGuide] = useAssignGuideMutation();
+
+  const handleGuideChange = (scheduleId: string, guideId: string) => {
+    assignGuide({ scheduleId, guideId: guideId || undefined });
+  };
 
   const {
     register,
@@ -178,6 +185,7 @@ export function TourScheduleDialog({
                   <TableHead>Còn trống</TableHead>
                   <TableHead>Đã đặt</TableHead>
                   <TableHead>Giá</TableHead>
+                  <TableHead>Hướng dẫn viên</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -188,6 +196,21 @@ export function TourScheduleDialog({
                     <TableCell>{row.available}</TableCell>
                     <TableCell>{row.booked}</TableCell>
                     <TableCell>{row.price ? Number(row.price).toLocaleString("vi-VN") : "—"}</TableCell>
+                    <TableCell>
+                      <select
+                        value={row.guideId ?? ""}
+                        onChange={(e) => handleGuideChange(row.id, e.target.value)}
+                        className="h-8 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                      >
+                        <option value="">— Chưa phân công —</option>
+                        {guides?.map((guide) => (
+                          <option key={guide.id} value={guide.id}>
+                            {[guide.user.firstName, guide.user.lastName].filter(Boolean).join(" ") ||
+                              guide.user.email}
+                          </option>
+                        ))}
+                      </select>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
