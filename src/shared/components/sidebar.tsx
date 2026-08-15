@@ -5,6 +5,7 @@ import {
   BookOpen,
   Building2,
   CalendarCheck,
+  Compass,
   LayoutDashboard,
   LogOut,
   Map,
@@ -50,6 +51,7 @@ const ADMIN_NAV_GROUPS = [
     items: [
       { href: "/providers", label: "Duyệt đối tác", icon: ShieldCheck },
       { href: "/properties", label: "Duyệt khách sạn", icon: Building2 },
+      { href: "/tours", label: "Duyệt tour", icon: Compass },
     ],
   },
   {
@@ -58,7 +60,7 @@ const ADMIN_NAV_GROUPS = [
   },
 ];
 
-const PROVIDER_NAV_GROUPS = [
+const HOTEL_PROVIDER_NAV_GROUPS = [
   {
     label: "Đối tác",
     items: [
@@ -68,13 +70,25 @@ const PROVIDER_NAV_GROUPS = [
   },
 ];
 
+const TOUR_PROVIDER_NAV_GROUPS = [
+  {
+    label: "Đối tác",
+    items: [{ href: "/my-tours", label: "Tour của tôi", icon: Compass }],
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
-  const navGroups = user?.role === "ADMIN" ? ADMIN_NAV_GROUPS : PROVIDER_NAV_GROUPS;
+  const navGroups =
+    user?.role === "ADMIN"
+      ? ADMIN_NAV_GROUPS
+      : user?.providerType === "TOUR"
+        ? TOUR_PROVIDER_NAV_GROUPS
+        : HOTEL_PROVIDER_NAV_GROUPS;
 
   const handleLogout = async () => {
     try {
