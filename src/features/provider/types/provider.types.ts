@@ -1,4 +1,4 @@
-export type ProviderStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type ProviderStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
 
 export interface Provider {
   id: string;

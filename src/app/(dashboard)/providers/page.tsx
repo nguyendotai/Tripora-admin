@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck } from "lucide-react";
+import { Lock, ShieldCheck, Unlock } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import { useListProvidersQuery } from "@/features/provider/api/provider.api";
 import type { Provider, ProviderStatus } from "@/features/provider/types/provider.types";
 import { ProviderStatusBadge } from "@/modules/provider-management/components/provider-status-badge";
 import { ReviewProviderDialog } from "@/modules/provider-management/components/review-provider-dialog";
+import { SuspendProviderDialog } from "@/modules/provider-management/components/suspend-provider-dialog";
 import { Header } from "@/shared/components/header";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ const FILTERS: { label: string; value: ProviderStatus | undefined }[] = [
   { label: "Chờ duyệt", value: "PENDING" },
   { label: "Đã duyệt", value: "APPROVED" },
   { label: "Đã từ chối", value: "REJECTED" },
+  { label: "Đã khoá", value: "SUSPENDED" },
   { label: "Tất cả", value: undefined },
 ];
 
@@ -29,6 +31,7 @@ export default function ProvidersManagementPage() {
   const [status, setStatus] = useState<ProviderStatus | undefined>("PENDING");
   const { data, isLoading, isError } = useListProvidersQuery({ status, limit: 50 });
   const [reviewing, setReviewing] = useState<Provider | null>(null);
+  const [suspending, setSuspending] = useState<Provider | null>(null);
 
   return (
     <>
@@ -88,14 +91,32 @@ export default function ProvidersManagementPage() {
                       <ProviderStatusBadge status={provider.status} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full"
-                        onClick={() => setReviewing(provider)}
-                      >
-                        <ShieldCheck className="h-4 w-4" />
-                      </Button>
+                      {(provider.status === "PENDING" || provider.status === "REJECTED") && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full"
+                          title="Duyệt hồ sơ"
+                          onClick={() => setReviewing(provider)}
+                        >
+                          <ShieldCheck className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {(provider.status === "APPROVED" || provider.status === "SUSPENDED") && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full"
+                          title={provider.status === "APPROVED" ? "Khoá đối tác" : "Mở khoá đối tác"}
+                          onClick={() => setSuspending(provider)}
+                        >
+                          {provider.status === "APPROVED" ? (
+                            <Lock className="h-4 w-4" />
+                          ) : (
+                            <Unlock className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -109,6 +130,11 @@ export default function ProvidersManagementPage() {
         open={!!reviewing}
         onOpenChange={(open) => !open && setReviewing(null)}
         provider={reviewing}
+      />
+      <SuspendProviderDialog
+        open={!!suspending}
+        onOpenChange={(open) => !open && setSuspending(null)}
+        provider={suspending}
       />
     </>
   );
