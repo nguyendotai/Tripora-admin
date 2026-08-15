@@ -63,6 +63,7 @@ export const baseApi = createApi({
     "RoomInventory",
     "Booking",
     "Tour",
+    "TourItinerary",
   ],
   endpoints: () => ({}),
 });
