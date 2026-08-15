@@ -88,7 +88,7 @@ export function RoomFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Sửa loại phòng" : "Thêm loại phòng"}</DialogTitle>
         </DialogHeader>
@@ -114,14 +114,15 @@ export function RoomFormDialog({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="beds">Giường (cách nhau bằng dấu phẩy)</Label>
-            <Input id="beds" placeholder="1 giường đôi, 1 giường đơn" {...register("beds")} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="amenities">Tiện ích (cách nhau bằng dấu phẩy)</Label>
-            <Input id="amenities" placeholder="wifi, tv, điều hoà" {...register("amenities")} />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="beds">Giường (cách nhau bằng dấu phẩy)</Label>
+              <Input id="beds" placeholder="1 giường đôi, 1 giường đơn" {...register("beds")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="amenities">Tiện ích (cách nhau bằng dấu phẩy)</Label>
+              <Input id="amenities" placeholder="wifi, tv, điều hoà" {...register("amenities")} />
+            </div>
           </div>
 
           <div className="space-y-1.5">

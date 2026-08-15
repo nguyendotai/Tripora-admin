@@ -53,28 +53,36 @@ export function ReviewProviderDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Duyệt hồ sơ đối tác</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-2 text-sm">
-          <p>
-            <span className="text-muted-foreground">Tên doanh nghiệp: </span>
-            <span className="font-medium text-foreground">{provider?.name}</span>
-          </p>
-          <p>
-            <span className="text-muted-foreground">Người nộp: </span>
-            {applicantName || provider?.user?.email} ({provider?.user?.email})
-          </p>
-          {provider?.contact && (
-            <p>
-              <span className="text-muted-foreground">Liên hệ: </span>
-              {provider.contact}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <div>
+            <p className="text-xs text-muted-foreground">Tên doanh nghiệp</p>
+            <p className="font-medium text-foreground">{provider?.name}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Người nộp</p>
+            <p className="font-medium text-foreground">
+              {applicantName || provider?.user?.email}
             </p>
+            {applicantName && (
+              <p className="text-muted-foreground">{provider?.user?.email}</p>
+            )}
+          </div>
+          {provider?.contact && (
+            <div>
+              <p className="text-xs text-muted-foreground">Liên hệ</p>
+              <p className="font-medium text-foreground">{provider.contact}</p>
+            </div>
           )}
           {provider?.description && (
-            <p className="text-muted-foreground">{provider.description}</p>
+            <div className="col-span-2">
+              <p className="text-xs text-muted-foreground">Mô tả</p>
+              <p className="text-muted-foreground">{provider.description}</p>
+            </div>
           )}
         </div>
 
