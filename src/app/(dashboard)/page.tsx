@@ -8,6 +8,8 @@ import { SignupsChart } from "@/modules/dashboard/components/signups-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
+import { getProviderHomePath } from "@/shared/utils/provider-routes";
+import { GUIDE_HOME_PATH } from "@/shared/utils/guide-routes";
 
 const STATS = [
   { icon: Users, label: "Người dùng", value: 0 },
@@ -22,7 +24,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user && user.role !== "ADMIN") {
-      router.replace("/my-properties");
+      router.replace(user.providerId ? getProviderHomePath(user.providerType) : user.guideId ? GUIDE_HOME_PATH : "/my-properties");
     }
   }, [user, router]);
 
