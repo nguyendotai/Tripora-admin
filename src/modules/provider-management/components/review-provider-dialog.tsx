@@ -53,7 +53,7 @@ export function ReviewProviderDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-[864px]">
         <DialogHeader>
           <DialogTitle>Duyệt hồ sơ đối tác</DialogTitle>
         </DialogHeader>
