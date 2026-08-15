@@ -49,7 +49,7 @@ export function SuspendProviderDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isSuspended ? "Mở khoá đối tác" : "Khoá đối tác"}</DialogTitle>
         </DialogHeader>

@@ -91,7 +91,7 @@ export function PropertyFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Sửa khách sạn" : "Thêm khách sạn"}</DialogTitle>
         </DialogHeader>
@@ -103,25 +103,26 @@ export function PropertyFormDialog({
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="destinationId">Điểm đến</Label>
-            <select
-              id="destinationId"
-              {...register("destinationId")}
-              className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              <option value="">— Không chọn —</option>
-              {destinations?.items.map((destination) => (
-                <option key={destination.id} value={destination.id}>
-                  {destination.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="address">Địa chỉ</Label>
-            <Input id="address" {...register("address")} />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="destinationId">Điểm đến</Label>
+              <select
+                id="destinationId"
+                {...register("destinationId")}
+                className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                <option value="">— Không chọn —</option>
+                {destinations?.items.map((destination) => (
+                  <option key={destination.id} value={destination.id}>
+                    {destination.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="address">Địa chỉ</Label>
+              <Input id="address" {...register("address")} />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
