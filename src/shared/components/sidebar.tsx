@@ -122,6 +122,7 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
       { href: "/my-vehicles", label: "Xe của tôi", icon: Car },
       { href: "/my-routes", label: "Tuyến đường của tôi", icon: Route },
       { href: "/my-transport-bookings", label: "Đặt xe của tôi", icon: CalendarCheck },
+      { href: "/my-drivers", label: "Tài xế", icon: UserCog },
     ],
   },
 ];
