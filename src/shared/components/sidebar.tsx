@@ -13,6 +13,7 @@ import {
   Map,
   MessageSquareText,
   Newspaper,
+  Route,
   Search,
   ShieldCheck,
   Ticket,
@@ -59,6 +60,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/tours", label: "Duyệt tour", icon: Compass },
       { href: "/experiences", label: "Duyệt experience", icon: Ticket },
       { href: "/vehicles", label: "Duyệt xe", icon: Car },
+      { href: "/routes", label: "Duyệt tuyến đường", icon: Route },
     ],
   },
   {
@@ -115,7 +117,10 @@ const EXPERIENCE_PROVIDER_NAV_GROUPS = [
 const TRANSPORT_PROVIDER_NAV_GROUPS = [
   {
     label: "Đối tác",
-    items: [{ href: "/my-vehicles", label: "Xe của tôi", icon: Car }],
+    items: [
+      { href: "/my-vehicles", label: "Xe của tôi", icon: Car },
+      { href: "/my-routes", label: "Tuyến đường của tôi", icon: Route },
+    ],
   },
 ];
 
