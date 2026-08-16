@@ -10,6 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  useAssignDriverMutation,
+  useListMyDriversQuery,
+} from "@/features/driver/api/driver.api";
 import { useListMyProviderTransportBookingsQuery } from "@/features/transport-booking/api/transport-booking.api";
 import { useListMyTransportRoutesQuery } from "@/features/transport-route/api/transport-route.api";
 import { BookingStatusBadge } from "@/modules/booking-management/components/booking-status-badge";
@@ -42,10 +46,16 @@ export default function MyTransportBookingsPage() {
   const [routeId, setRouteId] = useState<string | undefined>(undefined);
 
   const { data: routes } = useListMyTransportRoutesQuery();
+  const { data: drivers } = useListMyDriversQuery();
+  const [assignDriver] = useAssignDriverMutation();
   const { data: bookings, isLoading, isError } = useListMyProviderTransportBookingsQuery({
     status,
     routeId,
   });
+
+  const handleDriverChange = (bookingId: string, driverId: string) => {
+    assignDriver({ bookingId, driverId: driverId || undefined });
+  };
 
   useEffect(() => {
     if (user && (!user.providerId || user.providerType !== "TRANSPORT")) {
@@ -118,6 +128,7 @@ export default function MyTransportBookingsPage() {
                   <TableHead>Số người</TableHead>
                   <TableHead>Tổng tiền</TableHead>
                   <TableHead>Trạng thái</TableHead>
+                  <TableHead>Tài xế</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,6 +160,20 @@ export default function MyTransportBookingsPage() {
                     </TableCell>
                     <TableCell>
                       <BookingStatusBadge status={booking.status} />
+                    </TableCell>
+                    <TableCell>
+                      <select
+                        value={booking.driverId ?? ""}
+                        onChange={(e) => handleDriverChange(booking.id, e.target.value)}
+                        className="h-8 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                      >
+                        <option value="">— Chưa phân công —</option>
+                        {drivers?.map((driver) => (
+                          <option key={driver.id} value={driver.id}>
+                            {driver.name}
+                          </option>
+                        ))}
+                      </select>
                     </TableCell>
                   </TableRow>
                 ))}
