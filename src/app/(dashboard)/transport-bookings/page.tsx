@@ -93,6 +93,7 @@ export default function TransportBookingsPage() {
                   <TableHead>Số người</TableHead>
                   <TableHead>Tổng tiền</TableHead>
                   <TableHead>Trạng thái</TableHead>
+                  <TableHead>Tài xế</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -124,6 +125,9 @@ export default function TransportBookingsPage() {
                     </TableCell>
                     <TableCell>
                       <BookingStatusBadge status={booking.status} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {booking.driver?.name ?? "—"}
                     </TableCell>
                   </TableRow>
                 ))}

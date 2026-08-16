@@ -5,6 +5,7 @@ export interface TransportBooking {
   userId: string;
   routeId: string;
   vehicleId: string;
+  driverId?: string | null;
   routeOrigin: string;
   routeDestination: string;
   vehicleName: string;
@@ -23,6 +24,11 @@ export interface TransportBooking {
     firstName?: string | null;
     lastName?: string | null;
   };
+  driver?: {
+    id: string;
+    name: string;
+    phone?: string | null;
+  } | null;
 }
 
 export interface PaginationMeta {

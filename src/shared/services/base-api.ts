@@ -74,6 +74,7 @@ export const baseApi = createApi({
     "TransportRoute",
     "TransportSchedule",
     "TransportBooking",
+    "Driver",
   ],
   endpoints: () => ({}),
 });
