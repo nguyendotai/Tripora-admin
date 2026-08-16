@@ -1,0 +1,257 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  useListMyTransportScheduleQuery,
+  useSetTransportScheduleMutation,
+} from "@/features/transport-schedule/api/transport-schedule.api";
+import { useListMyVehiclesQuery } from "@/features/vehicle/api/vehicle.api";
+import type { TransportRoute } from "@/features/transport-route/types/transport-route.types";
+
+function toDateInput(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function defaultRange() {
+  const start = new Date();
+  const end = new Date();
+  end.setDate(end.getDate() + 29);
+  return { startDate: toDateInput(start), endDate: toDateInput(end) };
+}
+
+const formSchema = z
+  .object({
+    vehicleId: z.string().min(1, "Chọn xe"),
+    startDate: z.string().min(1, "Chọn ngày bắt đầu"),
+    endDate: z.string().min(1, "Chọn ngày kết thúc"),
+    capacity: z.string().min(1, "Nhập số chỗ"),
+    price: z.string().optional(),
+  })
+  .refine((v) => v.startDate <= v.endDate, {
+    message: "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+    path: ["endDate"],
+  });
+
+type FormValues = z.infer<typeof formSchema>;
+
+export function TransportScheduleDialog({
+  open,
+  onOpenChange,
+  route,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  route: TransportRoute | null;
+}) {
+  const [viewRange, setViewRange] = useState(defaultRange());
+  const [viewVehicleId, setViewVehicleId] = useState("");
+  const { data: vehicles } = useListMyVehiclesQuery();
+  const approvedVehicles = vehicles?.items.filter((v) => v.status === "APPROVED") ?? [];
+
+  useEffect(() => {
+    if (open) {
+      setViewRange(defaultRange());
+      setViewVehicleId("");
+    }
+  }, [open]);
+
+  const {
+    data: schedule,
+    isLoading,
+    isError,
+  } = useListMyTransportScheduleQuery(
+    route
+      ? { routeId: route.id, vehicleId: viewVehicleId || undefined, ...viewRange }
+      : { routeId: "", startDate: "", endDate: "" },
+    { skip: !open || !route },
+  );
+
+  const [setTransportSchedule, { isLoading: isSaving }] = useSetTransportScheduleMutation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({ resolver: zodResolver(formSchema) });
+
+  useEffect(() => {
+    if (open) {
+      reset({ vehicleId: "", ...defaultRange(), capacity: "4", price: "" });
+    }
+  }, [open, reset]);
+
+  const onSubmit = async (values: FormValues) => {
+    if (!route) return;
+    await setTransportSchedule({
+      routeId: route.id,
+      vehicleId: values.vehicleId,
+      startDate: values.startDate,
+      endDate: values.endDate,
+      capacity: Number(values.capacity),
+      price: values.price ? Number(values.price) : undefined,
+    }).unwrap();
+  };
+
+  const vehicleName = (id: string) => {
+    const v = approvedVehicles.find((veh) => veh.id === id);
+    return v ? v.name : id;
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[1536px]">
+        <DialogHeader>
+          <DialogTitle>
+            Lịch chạy — {route?.origin} → {route?.destination}
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="vehicleId">Xe</Label>
+              <select
+                id="vehicleId"
+                {...register("vehicleId")}
+                className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                <option value="">— Chọn xe —</option>
+                {approvedVehicles.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name} ({v.licensePlate})
+                  </option>
+                ))}
+              </select>
+              {errors.vehicleId && (
+                <p className="text-xs text-destructive">{errors.vehicleId.message}</p>
+              )}
+              {approvedVehicles.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Chưa có xe nào đã được duyệt — thêm xe trước ở &quot;Xe của tôi&quot;.
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="startDate">Từ ngày</Label>
+              <Input id="startDate" type="date" {...register("startDate")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="endDate">Đến ngày</Label>
+              <Input id="endDate" type="date" {...register("endDate")} />
+              {errors.endDate && (
+                <p className="text-xs text-destructive">{errors.endDate.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="capacity">Số chỗ</Label>
+              <Input id="capacity" type="number" min={0} {...register("capacity")} />
+              {errors.capacity && (
+                <p className="text-xs text-destructive">{errors.capacity.message}</p>
+              )}
+            </div>
+            <div className="col-span-2 space-y-1.5">
+              <Label htmlFor="price">Giá riêng (để trống = giá gốc tuyến)</Label>
+              <Input id="price" type="number" min={0} {...register("price")} />
+            </div>
+          </div>
+
+          <DialogFooter className="justify-start sm:justify-start">
+            <Button type="submit" disabled={isSaving} className="rounded-full">
+              {isSaving ? "Đang lưu..." : "Áp dụng cho khoảng ngày trên"}
+            </Button>
+          </DialogFooter>
+        </form>
+
+        <div className="rounded-[var(--radius-md)] border border-border">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-3">
+            <p className="text-sm font-medium">Xem lịch chạy hiện tại</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={viewVehicleId}
+                onChange={(e) => setViewVehicleId(e.target.value)}
+                className="h-8 rounded-full border border-border bg-background px-3 text-xs"
+              >
+                <option value="">Tất cả xe</option>
+                {approvedVehicles.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+              <Input
+                type="date"
+                className="h-8 w-36"
+                value={viewRange.startDate}
+                onChange={(e) => setViewRange((r) => ({ ...r, startDate: e.target.value }))}
+              />
+              <span className="text-xs text-muted-foreground">đến</span>
+              <Input
+                type="date"
+                className="h-8 w-36"
+                value={viewRange.endDate}
+                onChange={(e) => setViewRange((r) => ({ ...r, endDate: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          {isLoading ? (
+            <p className="p-4 text-sm text-muted-foreground">Đang tải...</p>
+          ) : isError ? (
+            <p className="p-4 text-sm text-destructive">Không tải được dữ liệu lịch chạy.</p>
+          ) : !schedule || schedule.length === 0 ? (
+            <p className="p-4 text-sm text-muted-foreground">
+              Chưa thiết lập lịch chạy cho khoảng ngày này.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ngày chạy</TableHead>
+                  <TableHead>Xe</TableHead>
+                  <TableHead>Tổng số chỗ</TableHead>
+                  <TableHead>Còn trống</TableHead>
+                  <TableHead>Đã đặt</TableHead>
+                  <TableHead>Giá</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {schedule.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{row.departureDate.slice(0, 10)}</TableCell>
+                    <TableCell>{vehicleName(row.vehicleId)}</TableCell>
+                    <TableCell>{row.capacity}</TableCell>
+                    <TableCell>{row.available}</TableCell>
+                    <TableCell>{row.booked}</TableCell>
+                    <TableCell>{row.price ? Number(row.price).toLocaleString("vi-VN") : "—"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
