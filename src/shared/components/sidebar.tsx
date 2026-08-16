@@ -13,6 +13,8 @@ import {
   Map,
   MessageSquareText,
   Newspaper,
+  Plane,
+  PlaneTakeoff,
   Route,
   Search,
   ShieldCheck,
@@ -43,6 +45,7 @@ const ADMIN_NAV_GROUPS = [
     label: "Quản lý nội dung",
     items: [
       { href: "/destinations", label: "Điểm đến", icon: Map },
+      { href: "/airports", label: "Sân bay", icon: Plane },
       { href: "/guides", label: "Cẩm nang", icon: BookOpen },
       { href: "/blog", label: "Blog", icon: Newspaper },
       { href: "/reviews", label: "Đánh giá", icon: MessageSquareText },
@@ -61,6 +64,8 @@ const ADMIN_NAV_GROUPS = [
       { href: "/experiences", label: "Duyệt experience", icon: Ticket },
       { href: "/vehicles", label: "Duyệt xe", icon: Car },
       { href: "/routes", label: "Duyệt tuyến đường", icon: Route },
+      { href: "/aircrafts", label: "Duyệt máy bay", icon: Plane },
+      { href: "/flights", label: "Duyệt chuyến bay", icon: PlaneTakeoff },
     ],
   },
   {
@@ -70,6 +75,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/tour-bookings", label: "Đặt tour", icon: CalendarCheck },
       { href: "/experience-bookings", label: "Đặt experience", icon: CalendarCheck },
       { href: "/transport-bookings", label: "Đặt xe", icon: CalendarCheck },
+      { href: "/flight-bookings", label: "Đặt vé máy bay", icon: CalendarCheck },
     ],
   },
 ];
@@ -127,6 +133,17 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
   },
 ];
 
+const FLIGHT_PROVIDER_NAV_GROUPS = [
+  {
+    label: "Đối tác",
+    items: [
+      { href: "/my-aircrafts", label: "Máy bay của tôi", icon: Plane },
+      { href: "/my-flights", label: "Chuyến bay của tôi", icon: PlaneTakeoff },
+      { href: "/my-flight-bookings", label: "Đặt vé của tôi", icon: CalendarCheck },
+    ],
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -142,7 +159,9 @@ export function Sidebar() {
           ? EXPERIENCE_PROVIDER_NAV_GROUPS
           : user?.providerType === "TRANSPORT"
             ? TRANSPORT_PROVIDER_NAV_GROUPS
-            : user?.providerId
+            : user?.providerType === "FLIGHT"
+              ? FLIGHT_PROVIDER_NAV_GROUPS
+              : user?.providerId
               ? HOTEL_PROVIDER_NAV_GROUPS
               : user?.guideId
                 ? GUIDE_NAV_GROUPS
