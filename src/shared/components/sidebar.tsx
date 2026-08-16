@@ -69,6 +69,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/bookings", label: "Đặt phòng", icon: CalendarCheck },
       { href: "/tour-bookings", label: "Đặt tour", icon: CalendarCheck },
       { href: "/experience-bookings", label: "Đặt experience", icon: CalendarCheck },
+      { href: "/transport-bookings", label: "Đặt xe", icon: CalendarCheck },
     ],
   },
 ];
@@ -120,6 +121,7 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
     items: [
       { href: "/my-vehicles", label: "Xe của tôi", icon: Car },
       { href: "/my-routes", label: "Tuyến đường của tôi", icon: Route },
+      { href: "/my-transport-bookings", label: "Đặt xe của tôi", icon: CalendarCheck },
     ],
   },
 ];
