@@ -70,6 +70,7 @@ export const baseApi = createApi({
     "Experience",
     "ExperienceSchedule",
     "ExperienceBooking",
+    "Vehicle",
   ],
   endpoints: () => ({}),
 });

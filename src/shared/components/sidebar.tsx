@@ -5,6 +5,7 @@ import {
   BookOpen,
   Building2,
   CalendarCheck,
+  Car,
   Compass,
   Footprints,
   LayoutDashboard,
@@ -57,6 +58,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/properties", label: "Duyệt khách sạn", icon: Building2 },
       { href: "/tours", label: "Duyệt tour", icon: Compass },
       { href: "/experiences", label: "Duyệt experience", icon: Ticket },
+      { href: "/vehicles", label: "Duyệt xe", icon: Car },
     ],
   },
   {
@@ -110,6 +112,13 @@ const EXPERIENCE_PROVIDER_NAV_GROUPS = [
   },
 ];
 
+const TRANSPORT_PROVIDER_NAV_GROUPS = [
+  {
+    label: "Đối tác",
+    items: [{ href: "/my-vehicles", label: "Xe của tôi", icon: Car }],
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -123,11 +132,13 @@ export function Sidebar() {
         ? TOUR_PROVIDER_NAV_GROUPS
         : user?.providerType === "ACTIVITY"
           ? EXPERIENCE_PROVIDER_NAV_GROUPS
-          : user?.providerId
-            ? HOTEL_PROVIDER_NAV_GROUPS
-            : user?.guideId
-              ? GUIDE_NAV_GROUPS
-              : HOTEL_PROVIDER_NAV_GROUPS;
+          : user?.providerType === "TRANSPORT"
+            ? TRANSPORT_PROVIDER_NAV_GROUPS
+            : user?.providerId
+              ? HOTEL_PROVIDER_NAV_GROUPS
+              : user?.guideId
+                ? GUIDE_NAV_GROUPS
+                : HOTEL_PROVIDER_NAV_GROUPS;
 
   const handleLogout = async () => {
     try {
