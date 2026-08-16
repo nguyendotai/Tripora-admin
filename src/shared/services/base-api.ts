@@ -71,6 +71,8 @@ export const baseApi = createApi({
     "ExperienceSchedule",
     "ExperienceBooking",
     "Vehicle",
+    "TransportRoute",
+    "TransportSchedule",
   ],
   endpoints: () => ({}),
 });
