@@ -1,5 +1,6 @@
 "use client";
 
+import { FileText } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,6 +83,25 @@ export function ReviewProviderDialog({
             <div className="col-span-2">
               <p className="text-xs text-muted-foreground">Mô tả</p>
               <p className="text-muted-foreground">{provider.description}</p>
+            </div>
+          )}
+          {provider?.documents && provider.documents.length > 0 && (
+            <div className="col-span-2">
+              <p className="text-xs text-muted-foreground">Tài liệu kinh doanh</p>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {provider.documents.map((url, index) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    <FileText className="h-3.5 w-3.5" />
+                    Tài liệu {index + 1}
+                  </a>
+                ))}
+              </div>
             </div>
           )}
         </div>
