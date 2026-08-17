@@ -6,6 +6,7 @@ import {
   Building2,
   CalendarCheck,
   Car,
+  CircleDollarSign,
   Compass,
   CreditCard,
   Footprints,
@@ -147,10 +148,19 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
 ];
 
 /** V7 vòng 1 — chỉ Owner/Manager mới quản lý được thành viên (Booking/Finance Staff vẫn xem được trang này nếu vào thẳng URL, chỉ không thấy link ở đây). */
-const ORGANIZATION_NAV_GROUP = {
-  label: "Tổ chức",
-  items: [{ href: "/my-organization/members", label: "Thành viên", icon: Users }],
-};
+/** V7 vòng 4 — mỗi mục trong nhóm "Tổ chức" hiện theo đúng orgRole đang đăng nhập, khác nhóm nav
+ * theo providerType (cố định), vì đây là phân quyền theo role trong tổ chức chứ không phải loại
+ * hình kinh doanh. */
+function getOrganizationNavItems(orgRole?: string) {
+  const items: { href: string; label: string; icon: typeof Users }[] = [];
+  if (orgRole === "OWNER" || orgRole === "MANAGER") {
+    items.push({ href: "/my-organization/members", label: "Thành viên", icon: Users });
+  }
+  if (orgRole === "OWNER" || orgRole === "MANAGER" || orgRole === "FINANCE_STAFF") {
+    items.push({ href: "/my-commissions", label: "Doanh thu", icon: CircleDollarSign });
+  }
+  return items;
+}
 
 const FLIGHT_PROVIDER_NAV_GROUPS = [
   {
@@ -185,9 +195,10 @@ export function Sidebar() {
               : user?.guideId
                 ? GUIDE_NAV_GROUPS
                 : HOTEL_PROVIDER_NAV_GROUPS;
+  const organizationNavItems = user?.providerId ? getOrganizationNavItems(user.orgRole) : [];
   const navGroups =
-    user?.providerId && (user.orgRole === "OWNER" || user.orgRole === "MANAGER")
-      ? [...baseNavGroups, ORGANIZATION_NAV_GROUP]
+    organizationNavItems.length > 0
+      ? [...baseNavGroups, { label: "Tổ chức", items: organizationNavItems }]
       : baseNavGroups;
 
   const handleLogout = async () => {
