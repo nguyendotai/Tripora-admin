@@ -29,6 +29,10 @@ export default function MyAircraftsPage() {
   const [editing, setEditing] = useState<Aircraft | null>(null);
   const [deleting, setDeleting] = useState<Aircraft | null>(null);
 
+  // V7 vòng 2: Booking/Finance Staff xem được (API cho phép), nhưng không quản lý được (403 nếu
+  // gọi) — ẩn nút cho gọn, không phải lớp bảo mật thật (Backend đã chặn).
+  const canManage = !user?.orgRole || user.orgRole === "OWNER" || user.orgRole === "MANAGER";
+
   useEffect(() => {
     if (user && (!user.providerId || user.providerType !== "FLIGHT")) {
       router.replace(user.providerId ? getProviderHomePath(user.providerType) : "/");
@@ -53,9 +57,11 @@ export default function MyAircraftsPage() {
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border p-4">
             <p className="font-semibold">Danh sách máy bay</p>
-            <Button size="sm" className="rounded-full" onClick={openCreate}>
-              <Plus className="mr-1.5 h-4 w-4" /> Thêm máy bay
-            </Button>
+            {canManage && (
+              <Button size="sm" className="rounded-full" onClick={openCreate}>
+                <Plus className="mr-1.5 h-4 w-4" /> Thêm máy bay
+              </Button>
+            )}
           </div>
 
           {isLoading ? (
@@ -98,22 +104,26 @@ export default function MyAircraftsPage() {
                       <AircraftStatusBadge status={aircraft.status} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full"
-                        onClick={() => openEdit(aircraft)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full text-destructive hover:text-destructive"
-                        onClick={() => setDeleting(aircraft)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {canManage && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => openEdit(aircraft)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full text-destructive hover:text-destructive"
+                            onClick={() => setDeleting(aircraft)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
