@@ -41,45 +41,49 @@ export default function LoginPage() {
 
   const onSubmit = async (values: LoginFormValues) => {
     setRoleError(false);
-    const result = await login(values).unwrap();
-
-    if (result.user.role === "ADMIN") {
-      dispatch(setCredentials(result));
-      saveSession(result.accessToken, result.user);
-      router.push("/");
-      return;
-    }
-
-    // Không phải ADMIN — thử xem có phải Provider đã được duyệt không.
-    dispatch(setCredentials(result));
     try {
-      const provider = await getMyProvider().unwrap();
-      if (provider.status !== "APPROVED") {
-        throw new Error("not approved");
+      const result = await login(values).unwrap();
+
+      if (result.user.role === "ADMIN") {
+        dispatch(setCredentials(result));
+        saveSession(result.accessToken, result.user);
+        router.push("/");
+        return;
       }
-      const user = {
-        ...result.user,
-        providerId: provider.id,
-        providerType: provider.type,
-        orgRole: provider.role,
-      };
-      dispatch(setCredentials({ accessToken: result.accessToken, user }));
-      saveSession(result.accessToken, user);
-      router.push(getProviderHomePath(provider.type));
-      return;
-    } catch {
-      // Không phải Provider — thử xem có phải Tour Guide không.
-    }
 
-    try {
-      const guide = await getMyGuideProfile().unwrap();
-      const user = { ...result.user, guideId: guide.id };
-      dispatch(setCredentials({ accessToken: result.accessToken, user }));
-      saveSession(result.accessToken, user);
-      router.push(GUIDE_HOME_PATH);
+      // Không phải ADMIN — thử xem có phải Provider đã được duyệt không.
+      dispatch(setCredentials(result));
+      try {
+        const provider = await getMyProvider().unwrap();
+        if (provider.status !== "APPROVED") {
+          throw new Error("not approved");
+        }
+        const user = {
+          ...result.user,
+          providerId: provider.id,
+          providerType: provider.type,
+          orgRole: provider.role,
+        };
+        dispatch(setCredentials({ accessToken: result.accessToken, user }));
+        saveSession(result.accessToken, user);
+        router.push(getProviderHomePath(provider.type));
+        return;
+      } catch {
+        // Không phải Provider — thử xem có phải Tour Guide không.
+      }
+
+      try {
+        const guide = await getMyGuideProfile().unwrap();
+        const user = { ...result.user, guideId: guide.id };
+        dispatch(setCredentials({ accessToken: result.accessToken, user }));
+        saveSession(result.accessToken, user);
+        router.push(GUIDE_HOME_PATH);
+      } catch {
+        dispatch(logout());
+        setRoleError(true);
+      }
     } catch {
-      dispatch(logout());
-      setRoleError(true);
+      // Sai email/mật khẩu — `error` từ useLoginMutation đã tự hiện thông báo bên dưới.
     }
   };
 
