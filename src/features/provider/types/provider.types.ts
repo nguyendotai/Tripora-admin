@@ -10,6 +10,7 @@ export interface Provider {
   description?: string | null;
   logo?: string | null;
   contact?: string | null;
+  documents?: string[] | null;
   status: ProviderStatus;
   createdAt: string;
   updatedAt: string;
