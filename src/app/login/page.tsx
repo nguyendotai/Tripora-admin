@@ -57,7 +57,12 @@ export default function LoginPage() {
       if (provider.status !== "APPROVED") {
         throw new Error("not approved");
       }
-      const user = { ...result.user, providerId: provider.id, providerType: provider.type };
+      const user = {
+        ...result.user,
+        providerId: provider.id,
+        providerType: provider.type,
+        orgRole: provider.role,
+      };
       dispatch(setCredentials({ accessToken: result.accessToken, user }));
       saveSession(result.accessToken, user);
       router.push(getProviderHomePath(provider.type));
