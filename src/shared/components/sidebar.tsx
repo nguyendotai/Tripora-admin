@@ -146,6 +146,12 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
   },
 ];
 
+/** V7 vòng 1 — chỉ Owner/Manager mới quản lý được thành viên (Booking/Finance Staff vẫn xem được trang này nếu vào thẳng URL, chỉ không thấy link ở đây). */
+const ORGANIZATION_NAV_GROUP = {
+  label: "Tổ chức",
+  items: [{ href: "/my-organization/members", label: "Thành viên", icon: Users }],
+};
+
 const FLIGHT_PROVIDER_NAV_GROUPS = [
   {
     label: "Đối tác",
@@ -163,7 +169,7 @@ export function Sidebar() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
-  const navGroups =
+  const baseNavGroups =
     user?.role === "ADMIN"
       ? ADMIN_NAV_GROUPS
       : user?.providerType === "TOUR"
@@ -179,6 +185,10 @@ export function Sidebar() {
               : user?.guideId
                 ? GUIDE_NAV_GROUPS
                 : HOTEL_PROVIDER_NAV_GROUPS;
+  const navGroups =
+    user?.providerId && (user.orgRole === "OWNER" || user.orgRole === "MANAGER")
+      ? [...baseNavGroups, ORGANIZATION_NAV_GROUP]
+      : baseNavGroups;
 
   const handleLogout = async () => {
     try {

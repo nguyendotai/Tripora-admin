@@ -1,5 +1,7 @@
 export type ProviderStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
 
+export type OrgMemberRole = "OWNER" | "MANAGER" | "BOOKING_STAFF" | "FINANCE_STAFF";
+
 export interface Provider {
   id: string;
   userId: string;
@@ -11,6 +13,8 @@ export interface Provider {
   status: ProviderStatus;
   createdAt: string;
   updatedAt: string;
+  /** V7 vòng 1 — chỉ có khi đã là thành viên tổ chức (Owner từ lúc được duyệt, hoặc mời sau). */
+  role?: OrgMemberRole;
   user?: {
     id: string;
     email: string;
