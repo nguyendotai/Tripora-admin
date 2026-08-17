@@ -1,5 +1,5 @@
 import { baseApi } from "@/shared/services/base-api";
-import type { PaginatedCommissions } from "../types/commission.types";
+import type { Commission, PaginatedCommissions } from "../types/commission.types";
 
 export interface CommissionListParams {
   providerId?: string;
@@ -19,7 +19,26 @@ export const commissionApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Commission" as const, id: "LIST" }],
     }),
+    listMyCommissions: builder.query<PaginatedCommissions, { page?: number; limit?: number } | void>({
+      query: (params) => ({ url: "/commissions/mine", params: params ?? undefined }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map((c) => ({ type: "Commission" as const, id: c.id })),
+              { type: "Commission" as const, id: "MY-LIST" },
+            ]
+          : [{ type: "Commission" as const, id: "MY-LIST" }],
+    }),
+    markCommissionPaidOut: builder.mutation<Commission, string>({
+      query: (id) => ({ url: `/commissions/${id}/payout`, method: "PATCH" }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Commission", id },
+        { type: "Commission", id: "LIST" },
+        { type: "Commission", id: "MY-LIST" },
+      ],
+    }),
   }),
 });
 
-export const { useListCommissionsQuery } = commissionApi;
+export const { useListCommissionsQuery, useListMyCommissionsQuery, useMarkCommissionPaidOutMutation } =
+  commissionApi;

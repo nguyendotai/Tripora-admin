@@ -1,8 +1,7 @@
 "use client";
 
-import { CircleDollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,13 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  useListCommissionsQuery,
-  useMarkCommissionPaidOutMutation,
-} from "@/features/commission/api/commission.api";
+import { useListMyCommissionsQuery } from "@/features/commission/api/commission.api";
 import type { BookingDomain } from "@/features/payment/types/payment.types";
 import { PayoutStatusBadge } from "@/modules/commission-management/components/payout-status-badge";
 import { Header } from "@/shared/components/header";
@@ -39,79 +32,59 @@ function formatDate(value: string) {
   return new Date(value).toLocaleString("vi-VN");
 }
 
-export default function CommissionsPage() {
+export default function MyCommissionsPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
-  const [providerId, setProviderId] = useState("");
-  const { data, isLoading, isError } = useListCommissionsQuery({
-    providerId: providerId || undefined,
-    limit: 50,
-  });
-  const [markPaidOut, { isLoading: isMarking }] = useMarkCommissionPaidOutMutation();
+  const { data, isLoading, isError } = useListMyCommissionsQuery({ limit: 50 });
 
   useEffect(() => {
-    if (user && user.role !== "ADMIN") {
+    if (
+      user &&
+      (!user.providerId || user.orgRole === "BOOKING_STAFF" || !user.orgRole)
+    ) {
       router.replace("/my-properties");
     }
   }, [user, router]);
 
   return (
     <>
-      <Header title="Hoa hồng" />
+      <Header title="Doanh thu của tôi" />
 
       <main className="p-6">
         <div className="rounded-[var(--radius-lg)] border border-border bg-card">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border p-4">
-            <p className="font-semibold">Hoa hồng theo từng Provider</p>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="providerId" className="text-xs text-muted-foreground">
-                Lọc theo Provider ID
-              </Label>
-              <Input
-                id="providerId"
-                className="h-8 w-28"
-                placeholder="VD: 12"
-                value={providerId}
-                onChange={(event) => setProviderId(event.target.value)}
-              />
-            </div>
+          <div className="flex items-center justify-between border-b border-border p-4">
+            <p className="font-semibold">Hoa hồng theo giao dịch</p>
           </div>
 
           {isLoading ? (
             <p className="p-6 text-sm text-muted-foreground">Đang tải...</p>
           ) : isError ? (
             <p className="p-6 text-sm text-destructive">
-              Không tải được danh sách hoa hồng. Kiểm tra Backend/kết nối MySQL.
+              Không tải được doanh thu. Kiểm tra Backend/kết nối MySQL.
             </p>
           ) : !data || data.items.length === 0 ? (
             <div className="flex flex-col items-center gap-1 p-10 text-center">
-              <p className="text-sm font-medium">Chưa có hoa hồng nào</p>
+              <p className="text-sm font-medium">Chưa có doanh thu nào</p>
               <p className="text-xs text-muted-foreground">
-                Hoa hồng tự sinh 1 dòng cho mỗi Payment thanh toán thành công.
+                Hoa hồng tự sinh 1 dòng cho mỗi giao dịch khách hàng thanh toán thành công.
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Provider</TableHead>
                   <TableHead>Đặt chỗ</TableHead>
                   <TableHead>Doanh thu</TableHead>
                   <TableHead>Tỉ lệ</TableHead>
                   <TableHead>Platform nhận</TableHead>
-                  <TableHead>Provider nhận</TableHead>
+                  <TableHead>Bạn nhận</TableHead>
                   <TableHead>Payout</TableHead>
                   <TableHead>Thời gian</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.items.map((commission) => (
                   <TableRow key={commission.id}>
-                    <TableCell>
-                      <p className="font-medium">{commission.provider?.name}</p>
-                      <p className="text-xs text-muted-foreground">#{commission.providerId}</p>
-                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {DOMAIN_LABELS[commission.bookingDomain]} #{commission.bookingId}
                     </TableCell>
@@ -121,10 +94,10 @@ export default function CommissionsPage() {
                     <TableCell className="text-muted-foreground">
                       {(Number(commission.rate) * 100).toFixed(0)}%
                     </TableCell>
-                    <TableCell className="font-medium text-primary">
+                    <TableCell className="text-muted-foreground">
                       {formatPrice(commission.platformAmount)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="font-medium text-primary">
                       {formatPrice(commission.providerAmount)}
                     </TableCell>
                     <TableCell>
@@ -132,20 +105,6 @@ export default function CommissionsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatDate(commission.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {commission.payoutStatus === "PENDING" && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-full"
-                          title="Đánh dấu đã trả"
-                          disabled={isMarking}
-                          onClick={() => markPaidOut(commission.id)}
-                        >
-                          <CircleDollarSign className="h-4 w-4" />
-                        </Button>
-                      )}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -1,5 +1,7 @@
 import type { BookingDomain } from "@/features/payment/types/payment.types";
 
+export type PayoutStatus = "PENDING" | "PAID";
+
 export interface Commission {
   id: string;
   providerId: string;
@@ -10,8 +12,11 @@ export interface Commission {
   rate: string;
   platformAmount: string;
   providerAmount: string;
+  payoutStatus: PayoutStatus;
+  paidAt?: string | null;
   createdAt: string;
-  provider: { name: string; type: string };
+  /** Chỉ có ở `GET /commissions` (Admin, xem toàn hệ thống) — `GET /commissions/mine` (Provider) không kèm vì đã biết là chính mình. */
+  provider?: { name: string; type: string };
 }
 
 export interface PaginationMeta {
