@@ -80,6 +80,10 @@ export const baseApi = createApi({
     "Flight",
     "FlightSchedule",
     "FlightBooking",
+    "Payment",
+    "Commission",
+    "Coupon",
+    "Promotion",
   ],
   endpoints: () => ({}),
 });
