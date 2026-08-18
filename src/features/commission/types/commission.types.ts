@@ -32,3 +32,11 @@ export interface PaginatedCommissions {
   items: Commission[];
   pagination: PaginationMeta;
 }
+
+/** V7 vòng 6 — GET /commissions/mine/summary, dùng cho trang Overview. */
+export interface CommissionSummary {
+  totalTransactions: number;
+  totalEarned: string;
+  totalPaid: string;
+  totalPending: string;
+}
