@@ -3,6 +3,7 @@ import type { PaginatedReviews } from "../types/review.types";
 
 export interface ReviewListParams {
   destinationId?: string;
+  propertyId?: string;
   page?: number;
   limit?: number;
 }

@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListDestinationsQuery } from "@/features/destination/api/destination.api";
+import { useListPropertiesForModerationQuery } from "@/features/property/api/property.api";
 import { useListReviewsQuery } from "@/features/review/api/review.api";
 import type { Review } from "@/features/review/types/review.types";
 import { DeleteReviewDialog } from "@/modules/review-management/components/delete-review-dialog";
@@ -43,10 +44,14 @@ function reviewerName(review: Review) {
 export default function ReviewsManagementPage() {
   const { data, isLoading, isError } = useListReviewsQuery({ limit: 50 });
   const { data: destinations } = useListDestinationsQuery({ limit: 100 });
+  const { data: properties } = useListPropertiesForModerationQuery({ limit: 100 });
   const [deleting, setDeleting] = useState<Review | null>(null);
 
   const destinationNameById = new Map(
     (destinations?.items ?? []).map((d) => [d.id, d.name]),
+  );
+  const propertyNameById = new Map(
+    (properties?.items ?? []).map((p) => [p.id, p.name]),
   );
 
   return (
@@ -81,7 +86,7 @@ export default function ReviewsManagementPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Điểm đến</TableHead>
+                  <TableHead>Đối tượng</TableHead>
                   <TableHead>Người dùng</TableHead>
                   <TableHead>Đánh giá</TableHead>
                   <TableHead>Nội dung</TableHead>
@@ -92,7 +97,24 @@ export default function ReviewsManagementPage() {
                 {data.items.map((review) => (
                   <TableRow key={review.id}>
                     <TableCell className="font-medium">
-                      {destinationNameById.get(review.destinationId) ?? `#${review.destinationId}`}
+                      {review.propertyId ? (
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-full bg-[#E7F0FF] text-[#2563EB] dark:bg-[#16233D] dark:text-[#7FADFF]">
+                            Khách sạn
+                          </Badge>
+                          <span>{propertyNameById.get(review.propertyId) ?? `#${review.propertyId}`}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-full bg-[#E7F0FF] text-[#2563EB] dark:bg-[#16233D] dark:text-[#7FADFF]">
+                            Điểm đến
+                          </Badge>
+                          <span>
+                            {destinationNameById.get(review.destinationId ?? "") ??
+                              `#${review.destinationId}`}
+                          </span>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {reviewerName(review)}
