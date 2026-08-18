@@ -23,6 +23,7 @@ import {
   Route,
   Search,
   ShieldCheck,
+  Star,
   Tag,
   Ticket,
   UserCircle,
@@ -101,6 +102,7 @@ const HOTEL_PROVIDER_NAV_GROUPS = [
     items: [
       { href: "/my-properties", label: "Khách sạn của tôi", icon: Building2 },
       { href: "/my-bookings", label: "Đặt phòng của tôi", icon: CalendarCheck },
+      { href: "/my-reviews", label: "Đánh giá", icon: Star },
     ],
   },
 ];

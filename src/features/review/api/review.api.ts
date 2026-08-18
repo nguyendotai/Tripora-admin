@@ -21,6 +21,17 @@ export const reviewApi = baseApi.injectEndpoints({
           : [{ type: "Review" as const, id: "LIST" }],
     }),
 
+    listMyReviews: builder.query<PaginatedReviews, { page?: number; limit?: number } | void>({
+      query: (params) => ({ url: "/reviews/mine", params: params ?? undefined }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map((r) => ({ type: "Review" as const, id: r.id })),
+              { type: "Review" as const, id: "MY-LIST" },
+            ]
+          : [{ type: "Review" as const, id: "MY-LIST" }],
+    }),
+
     deleteReview: builder.mutation<void, string>({
       query: (id) => ({ url: `/reviews/${id}`, method: "DELETE" }),
       invalidatesTags: [{ type: "Review", id: "LIST" }],
@@ -28,4 +39,4 @@ export const reviewApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useListReviewsQuery, useDeleteReviewMutation } = reviewApi;
+export const { useListReviewsQuery, useListMyReviewsQuery, useDeleteReviewMutation } = reviewApi;
