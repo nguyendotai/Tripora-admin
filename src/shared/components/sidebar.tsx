@@ -150,9 +150,13 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
 /** V7 vòng 1 — chỉ Owner/Manager mới quản lý được thành viên (Booking/Finance Staff vẫn xem được trang này nếu vào thẳng URL, chỉ không thấy link ở đây). */
 /** V7 vòng 4 — mỗi mục trong nhóm "Tổ chức" hiện theo đúng orgRole đang đăng nhập, khác nhóm nav
  * theo providerType (cố định), vì đây là phân quyền theo role trong tổ chức chứ không phải loại
- * hình kinh doanh. */
+ * hình kinh doanh. V7 vòng 6 thêm "Tổng quan" — cùng điều kiện role với "Doanh thu" vì cùng dựa
+ * trên dữ liệu Commission (quyền finance:view). */
 function getOrganizationNavItems(orgRole?: string) {
   const items: { href: string; label: string; icon: typeof Users }[] = [];
+  if (orgRole === "OWNER" || orgRole === "MANAGER" || orgRole === "FINANCE_STAFF") {
+    items.push({ href: "/my-overview", label: "Tổng quan", icon: LayoutDashboard });
+  }
   if (orgRole === "OWNER" || orgRole === "MANAGER") {
     items.push({ href: "/my-organization/members", label: "Thành viên", icon: Users });
   }
