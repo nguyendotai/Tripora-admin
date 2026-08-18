@@ -1,6 +1,7 @@
 import { baseApi } from "@/shared/services/base-api";
 import type {
   Commission,
+  CommissionAnalyticsPoint,
   CommissionSummary,
   PaginatedCommissions,
 } from "../types/commission.types";
@@ -37,6 +38,10 @@ export const commissionApi = baseApi.injectEndpoints({
       query: () => "/commissions/mine/summary",
       providesTags: [{ type: "Commission" as const, id: "MY-SUMMARY" }],
     }),
+    getMyAnalytics: builder.query<CommissionAnalyticsPoint[], void>({
+      query: () => "/commissions/mine/analytics",
+      providesTags: [{ type: "Commission" as const, id: "MY-ANALYTICS" }],
+    }),
     markCommissionPaidOut: builder.mutation<Commission, string>({
       query: (id) => ({ url: `/commissions/${id}/payout`, method: "PATCH" }),
       invalidatesTags: (_result, _error, id) => [
@@ -53,5 +58,6 @@ export const {
   useListCommissionsQuery,
   useListMyCommissionsQuery,
   useGetMySummaryQuery,
+  useGetMyAnalyticsQuery,
   useMarkCommissionPaidOutMutation,
 } = commissionApi;
