@@ -12,11 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  useGetMyAnalyticsQuery,
   useGetMySummaryQuery,
   useListMyCommissionsQuery,
 } from "@/features/commission/api/commission.api";
 import type { BookingDomain } from "@/features/payment/types/payment.types";
 import { PayoutStatusBadge } from "@/modules/commission-management/components/payout-status-badge";
+import { RevenueChart } from "@/modules/commission-management/components/revenue-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
@@ -45,6 +47,8 @@ export default function MyOverviewPage() {
   const { data: recent, isLoading: isLoadingRecent } = useListMyCommissionsQuery({
     limit: 5,
   });
+  const { data: analytics, isLoading: isLoadingAnalytics, isError: isAnalyticsError } =
+    useGetMyAnalyticsQuery();
 
   useEffect(() => {
     if (
@@ -87,6 +91,19 @@ export default function MyOverviewPage() {
               value={isLoadingSummary ? "..." : formatPrice(summary?.totalPending ?? "0")}
             />
           </div>
+        )}
+
+        {isAnalyticsError ? (
+          <p className="mt-4 text-sm text-destructive">
+            Không tải được biểu đồ doanh thu. Kiểm tra Backend/kết nối MySQL.
+          </p>
+        ) : (
+          !isLoadingAnalytics &&
+          analytics && (
+            <div className="mt-4">
+              <RevenueChart data={analytics} />
+            </div>
+          )
         )}
 
         <div className="mt-4 rounded-[var(--radius-lg)] border border-border bg-card">

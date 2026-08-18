@@ -40,3 +40,10 @@ export interface CommissionSummary {
   totalPaid: string;
   totalPending: string;
 }
+
+/** V7 vòng 8 — GET /commissions/mine/analytics, 1 phần tử/1 ngày trong 30 ngày gần nhất. */
+export interface CommissionAnalyticsPoint {
+  date: string;
+  totalRevenue: string;
+  totalBookings: number;
+}
