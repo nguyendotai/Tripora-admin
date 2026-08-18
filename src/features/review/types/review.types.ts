@@ -3,7 +3,8 @@ import type { PaginationMeta } from "@/features/destination/types/destination.ty
 export interface Review {
   id: string;
   userId: string;
-  destinationId: string;
+  destinationId?: string | null;
+  propertyId?: string | null;
   rating: number;
   content?: string | null;
   createdAt: string;
