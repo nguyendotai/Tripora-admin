@@ -155,7 +155,9 @@ const TRANSPORT_PROVIDER_NAV_GROUPS = [
  * theo providerType (cố định), vì đây là phân quyền theo role trong tổ chức chứ không phải loại
  * hình kinh doanh. V7 vòng 6 thêm "Tổng quan" — cùng điều kiện role với "Doanh thu" vì cùng dựa
  * trên dữ liệu Commission (quyền finance:view). V7 vòng 7 thêm "Khách hàng" — điều kiện role khác
- * (Booking Staff thay vì Finance Staff) vì dựa trên quyền booking:view, không phải finance:view. */
+ * (Booking Staff thay vì Finance Staff) vì dựa trên quyền booking:view, không phải finance:view.
+ * V7 vòng 11 thêm "Khuyến mãi" — chỉ Owner/Manager (quyền promotion:manage), áp dụng mọi
+ * providerType nên đặt ở đây thay vì *_PROVIDER_NAV_GROUPS (khác "Đánh giá" vòng 10 chỉ Hotel). */
 function getOrganizationNavItems(orgRole?: string) {
   const items: { href: string; label: string; icon: typeof Users }[] = [];
   if (orgRole === "OWNER" || orgRole === "MANAGER" || orgRole === "FINANCE_STAFF") {
@@ -169,6 +171,9 @@ function getOrganizationNavItems(orgRole?: string) {
   }
   if (orgRole === "OWNER" || orgRole === "MANAGER" || orgRole === "FINANCE_STAFF") {
     items.push({ href: "/my-commissions", label: "Doanh thu", icon: CircleDollarSign });
+  }
+  if (orgRole === "OWNER" || orgRole === "MANAGER") {
+    items.push({ href: "/my-promotions", label: "Khuyến mãi", icon: Megaphone });
   }
   return items;
 }

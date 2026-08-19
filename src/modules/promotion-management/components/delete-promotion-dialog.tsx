@@ -8,23 +8,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeletePromotionMutation } from "@/features/promotion/api/promotion.api";
+import {
+  useDeleteMyPromotionMutation,
+  useDeletePromotionMutation,
+} from "@/features/promotion/api/promotion.api";
 import type { Promotion } from "@/features/promotion/types/promotion.types";
 
 export function DeletePromotionDialog({
   open,
   onOpenChange,
   promotion,
+  mine = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   promotion: Promotion | null;
+  mine?: boolean;
 }) {
-  const [deletePromotion, { isLoading }] = useDeletePromotionMutation();
+  const [deletePromotion, { isLoading: isDeletingAdmin }] = useDeletePromotionMutation();
+  const [deleteMyPromotion, { isLoading: isDeletingMine }] = useDeleteMyPromotionMutation();
+  const isLoading = mine ? isDeletingMine : isDeletingAdmin;
 
   const handleConfirm = async () => {
     if (!promotion) return;
-    await deletePromotion(promotion.id).unwrap();
+    if (mine) {
+      await deleteMyPromotion(promotion.id).unwrap();
+    } else {
+      await deletePromotion(promotion.id).unwrap();
+    }
     onOpenChange(false);
   };
 
