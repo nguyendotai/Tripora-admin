@@ -3,6 +3,7 @@ import type { DiscountType, PromoStatus } from "@/features/coupon/types/coupon.t
 
 export interface Promotion {
   id: string;
+  providerId?: string | null;
   name: string;
   discountType: DiscountType;
   discountValue: string;
