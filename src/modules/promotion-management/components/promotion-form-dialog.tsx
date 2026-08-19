@@ -16,7 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { BookingDomain } from "@/features/payment/types/payment.types";
 import {
+  useCreateMyPromotionMutation,
   useCreatePromotionMutation,
+  useUpdateMyPromotionMutation,
   useUpdatePromotionMutation,
 } from "@/features/promotion/api/promotion.api";
 import type { Promotion } from "@/features/promotion/types/promotion.types";
@@ -53,17 +55,29 @@ export function PromotionFormDialog({
   open,
   onOpenChange,
   promotion,
+  mine = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   promotion?: Promotion | null;
+  /** true = Provider tu quan ly Promotion cua minh (/promotions/mine) — an muc chon domain vi
+   * Backend tu gan theo ProviderType dang dang nhap (V7 vong 11). */
+  mine?: boolean;
 }) {
   const isEdit = !!promotion;
-  const [createPromotion, { isLoading: isCreating, error: createError }] =
+  const [createPromotion, { isLoading: isCreatingAdmin, error: createAdminError }] =
     useCreatePromotionMutation();
-  const [updatePromotion, { isLoading: isUpdating, error: updateError }] =
+  const [updatePromotion, { isLoading: isUpdatingAdmin, error: updateAdminError }] =
     useUpdatePromotionMutation();
-  const isLoading = isCreating || isUpdating;
+  const [createMyPromotion, { isLoading: isCreatingMine, error: createMineError }] =
+    useCreateMyPromotionMutation();
+  const [updateMyPromotion, { isLoading: isUpdatingMine, error: updateMineError }] =
+    useUpdateMyPromotionMutation();
+  const isLoading = mine
+    ? isCreatingMine || isUpdatingMine
+    : isCreatingAdmin || isUpdatingAdmin;
+  const createError = mine ? createMineError : createAdminError;
+  const updateError = mine ? updateMineError : updateAdminError;
 
   const {
     register,
@@ -112,14 +126,20 @@ export function PromotionFormDialog({
       discountValue: Number(values.discountValue),
       maxDiscountAmount: values.maxDiscountAmount ? Number(values.maxDiscountAmount) : undefined,
       minOrderAmount: values.minOrderAmount ? Number(values.minOrderAmount) : undefined,
-      applicableDomains: domains.length > 0 ? domains : undefined,
+      ...(!mine && { applicableDomains: domains.length > 0 ? domains : undefined }),
       priority: values.priority ? Number(values.priority) : undefined,
       validFrom: new Date(`${values.validFrom}T00:00:00.000Z`).toISOString(),
       validUntil: new Date(`${values.validUntil}T23:59:59.000Z`).toISOString(),
       status: values.status,
     };
 
-    if (isEdit && promotion) {
+    if (mine) {
+      if (isEdit && promotion) {
+        await updateMyPromotion({ id: promotion.id, data: payload }).unwrap();
+      } else {
+        await createMyPromotion(payload).unwrap();
+      }
+    } else if (isEdit && promotion) {
       await updatePromotion({ id: promotion.id, data: payload }).unwrap();
     } else {
       await createPromotion(payload).unwrap();
@@ -178,26 +198,28 @@ export function PromotionFormDialog({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label>Áp dụng cho (bỏ trống = mọi loại đặt chỗ)</Label>
-            <div className="flex flex-wrap gap-1.5">
-              {DOMAIN_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => toggleDomain(option.value)}
-                  className={cn(
-                    "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                    domains.includes(option.value)
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-transparent text-muted-foreground hover:bg-secondary",
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
+          {!mine && (
+            <div className="space-y-1.5">
+              <Label>Áp dụng cho (bỏ trống = mọi loại đặt chỗ)</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {DOMAIN_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => toggleDomain(option.value)}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                      domains.includes(option.value)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent text-muted-foreground hover:bg-secondary",
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
