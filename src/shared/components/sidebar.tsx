@@ -21,6 +21,7 @@ import {
   Plane,
   PlaneTakeoff,
   Route,
+  Rss,
   Search,
   ShieldCheck,
   Star,
@@ -56,6 +57,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/guides", label: "Cẩm nang", icon: BookOpen },
       { href: "/blog", label: "Blog", icon: Newspaper },
       { href: "/reviews", label: "Đánh giá", icon: MessageSquareText },
+      { href: "/posts", label: "Bài viết", icon: Rss },
     ],
   },
   {
