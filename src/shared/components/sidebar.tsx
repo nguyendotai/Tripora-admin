@@ -16,6 +16,7 @@ import {
   Map,
   Megaphone,
   MessageSquareText,
+  MessagesSquare,
   Newspaper,
   Percent,
   Plane,
@@ -58,6 +59,7 @@ const ADMIN_NAV_GROUPS = [
       { href: "/blog", label: "Blog", icon: Newspaper },
       { href: "/reviews", label: "Đánh giá", icon: MessageSquareText },
       { href: "/posts", label: "Bài viết", icon: Rss },
+      { href: "/comments", label: "Bình luận", icon: MessagesSquare },
     ],
   },
   {
