@@ -28,7 +28,10 @@ const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   let result = await rawBaseQuery(args, api, extraOptions);
 
-  if (result.error?.status === 401) {
+  // 403 co the la access token con han nhung role da doi trong DB sau khi token duoc cap
+  // (vd vua duoc gan quyen ADMIN) — thu refresh 1 lan de lay role moi nhat truoc khi chiu thua.
+  // Neu request van 403 sau refresh thi la thieu quyen that, khong logout.
+  if (result.error?.status === 401 || result.error?.status === 403) {
     const refreshResult = await rawBaseQuery(
       { url: "/auth/refresh", method: "POST" },
       api,
