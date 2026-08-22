@@ -1,26 +1,25 @@
 "use client";
 
-import { BookOpen, Map, MessageSquareText, Users } from "lucide-react";
+import { CircleDollarSign, Percent, Receipt, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { RecentUsersCard } from "@/modules/dashboard/components/recent-users-card";
-import { SignupsChart } from "@/modules/dashboard/components/signups-chart";
+import { useGetReportAnalyticsQuery } from "@/features/report/api/report.api";
+import { PlatformRevenueChart } from "@/modules/dashboard/components/platform-revenue-chart";
+import { PopularDestinationsCard } from "@/modules/dashboard/components/popular-destinations-card";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
 import { Header } from "@/shared/components/header";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
 import { getProviderHomePath } from "@/shared/utils/provider-routes";
 import { GUIDE_HOME_PATH } from "@/shared/utils/guide-routes";
 
-const STATS = [
-  { icon: Users, label: "Người dùng", value: 0 },
-  { icon: Map, label: "Điểm đến", value: 0 },
-  { icon: BookOpen, label: "Cẩm nang", value: 0 },
-  { icon: MessageSquareText, label: "Đánh giá", value: 0 },
-];
+function formatPrice(price: string) {
+  return `${Number(price).toLocaleString("vi-VN")} VND`;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
+  const { data, isLoading, isError } = useGetReportAnalyticsQuery();
 
   useEffect(() => {
     if (user && user.role !== "ADMIN") {
@@ -33,23 +32,44 @@ export default function DashboardPage() {
       <Header title="Dashboard" />
 
       <main className="p-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STATS.map((stat) => (
+        {isError ? (
+          <p className="text-sm text-destructive">
+            Không tải được số liệu tổng quan. Kiểm tra Backend/kết nối MySQL.
+          </p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              key={stat.label}
-              icon={stat.icon}
-              label={stat.label}
-              value={stat.value}
-              caption="Chưa có dữ liệu"
+              icon={CircleDollarSign}
+              label="Doanh thu"
+              value={isLoading ? "..." : formatPrice(data?.revenue.total ?? "0")}
             />
-          ))}
-        </div>
+            <StatCard
+              icon={Receipt}
+              label="Đơn đặt chỗ"
+              value={isLoading ? "..." : (data?.bookings.total ?? 0)}
+            />
+            <StatCard
+              icon={Store}
+              label="Đối tác đã duyệt"
+              value={isLoading ? "..." : (data?.providers.approved ?? 0)}
+              caption={
+                isLoading ? undefined : `${data?.providers.pending ?? 0} đang chờ duyệt`
+              }
+            />
+            <StatCard
+              icon={Percent}
+              label="Tỷ lệ chuyển đổi"
+              value={isLoading ? "..." : `${(data?.conversion.rate ?? 0).toFixed(1)}%`}
+              caption="Xem sản phẩm → đặt chỗ, 30 ngày"
+            />
+          </div>
+        )}
 
         <div className="mt-4 grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <SignupsChart />
+            {!isLoading && data && <PlatformRevenueChart data={data.revenue.last30d} />}
           </div>
-          <RecentUsersCard />
+          <PopularDestinationsCard />
         </div>
       </main>
     </>
