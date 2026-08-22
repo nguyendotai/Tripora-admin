@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI/agent instruction files — giu lai local cho Claude Code, khong publish len repo
+CLAUDE.md
+AGENTS.md
+.claude/
+.agents/
