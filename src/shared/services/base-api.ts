@@ -90,6 +90,7 @@ export const baseApi = createApi({
     "OrganizationMember",
     "Post",
     "Comment",
+    "Notification",
   ],
   endpoints: () => ({}),
 });
