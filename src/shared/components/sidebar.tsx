@@ -11,6 +11,7 @@ import {
   Contact,
   CreditCard,
   Footprints,
+  History,
   LayoutDashboard,
   LogOut,
   Map,
@@ -49,6 +50,7 @@ const ADMIN_NAV_GROUPS = [
     items: [
       { href: "/", label: "Dashboard", icon: LayoutDashboard },
       { href: "/reports", label: "Báo cáo", icon: BarChart3 },
+      { href: "/activity-logs", label: "Nhật ký hoạt động", icon: History },
     ],
   },
   {
