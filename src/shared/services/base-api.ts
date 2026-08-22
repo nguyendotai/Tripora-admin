@@ -91,6 +91,8 @@ export const baseApi = createApi({
     "Post",
     "Comment",
     "Notification",
+    "Conversation",
+    "Message",
   ],
   endpoints: () => ({}),
 });
