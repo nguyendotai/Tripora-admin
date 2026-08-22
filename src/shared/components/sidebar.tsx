@@ -15,6 +15,7 @@ import {
   LogOut,
   Map,
   Megaphone,
+  MessageCircle,
   MessageSquareText,
   MessagesSquare,
   Newspaper,
@@ -169,6 +170,7 @@ function getOrganizationNavItems(orgRole?: string) {
   }
   if (orgRole === "OWNER" || orgRole === "MANAGER" || orgRole === "BOOKING_STAFF") {
     items.push({ href: "/my-customers", label: "Khách hàng", icon: Contact });
+    items.push({ href: "/my-conversations", label: "Tin nhắn", icon: MessageCircle });
   }
   if (orgRole === "OWNER" || orgRole === "MANAGER") {
     items.push({ href: "/my-organization/members", label: "Thành viên", icon: Users });

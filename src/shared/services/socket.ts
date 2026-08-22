@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { io, type Socket } from "socket.io-client";
 import { API_BASE_URL } from "@/configs/env";
+import { conversationApi } from "@/features/conversation/api/conversation.api";
 import { notificationApi } from "@/features/notification/api/notification.api";
 import { useAppDispatch } from "@/shared/hooks/use-app-dispatch";
 import { useAppSelector } from "@/shared/hooks/use-app-selector";
@@ -29,6 +30,15 @@ export function useNotificationSocket() {
     socket = io(SOCKET_URL, { auth: { token: accessToken } });
     socket.on("notification:new", () => {
       dispatch(notificationApi.util.invalidateTags([{ type: "Notification", id: "LIST" }]));
+      // V9 vong 3 — Chat khong co event Socket.IO rieng, tin nhan moi cung di qua notify() nen
+      // broaden invalidate luon Conversation/Message o day (re, an toan — RTK Query chi refetch
+      // query dang co subscriber that).
+      dispatch(
+        conversationApi.util.invalidateTags([
+          { type: "Conversation", id: "LIST" },
+          { type: "Message", id: "LIST" },
+        ]),
+      );
     });
 
     return () => {
