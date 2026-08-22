@@ -20,3 +20,40 @@ export interface ReportOverview {
     wishlistCount: number;
   }[];
 }
+
+export interface RevenueDayPoint {
+  date: string;
+  totalRevenue: string;
+  totalBookings: number;
+}
+
+export interface ReportAnalytics {
+  revenue: {
+    total: string;
+    totalTransactions: number;
+    last30d: RevenueDayPoint[];
+  };
+  bookings: {
+    total: number;
+    byDomain: {
+      HOTEL: number;
+      TOUR: number;
+      EXPERIENCE: number;
+      TRANSPORT: number;
+      FLIGHT: number;
+    };
+  };
+  providers: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    suspended: number;
+  };
+  users: ReportOverview["users"];
+  conversion: {
+    viewedUsers: number;
+    convertedUsers: number;
+    rate: number;
+  };
+}

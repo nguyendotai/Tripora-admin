@@ -17,6 +17,7 @@ import {
   useListMyCommissionsQuery,
 } from "@/features/commission/api/commission.api";
 import type { BookingDomain } from "@/features/payment/types/payment.types";
+import { BookingsChart } from "@/modules/commission-management/components/bookings-chart";
 import { PayoutStatusBadge } from "@/modules/commission-management/components/payout-status-badge";
 import { RevenueChart } from "@/modules/commission-management/components/revenue-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
@@ -100,8 +101,9 @@ export default function MyOverviewPage() {
         ) : (
           !isLoadingAnalytics &&
           analytics && (
-            <div className="mt-4">
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <RevenueChart data={analytics} />
+              <BookingsChart data={analytics} />
             </div>
           )
         )}

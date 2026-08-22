@@ -36,6 +36,9 @@ export const destinationApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Destination" as const, id: "LIST" }],
     }),
+    listPopularDestinations: builder.query<Destination[], { limit?: number } | void>({
+      query: (params) => ({ url: "/destinations/popular", params: params ?? undefined }),
+    }),
     createDestination: builder.mutation<Destination, DestinationInput>({
       query: (body) => ({ url: "/destinations", method: "POST", body }),
       invalidatesTags: [{ type: "Destination", id: "LIST" }],
@@ -63,6 +66,7 @@ export const destinationApi = baseApi.injectEndpoints({
 
 export const {
   useListDestinationsQuery,
+  useListPopularDestinationsQuery,
   useCreateDestinationMutation,
   useUpdateDestinationMutation,
   useDeleteDestinationMutation,
