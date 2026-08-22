@@ -27,6 +27,32 @@ export interface RevenueDayPoint {
   totalBookings: number;
 }
 
+export type GeneratedReportStatus = "PENDING" | "COMPLETED" | "FAILED";
+
+export interface GeneratedReport {
+  id: string;
+  status: GeneratedReportStatus;
+  data: ReportAnalytics | null;
+  errorMessage?: string | null;
+  requestedBy: string;
+  createdAt: string;
+  completedAt?: string | null;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface PaginatedGeneratedReports {
+  items: GeneratedReport[];
+  pagination: PaginationMeta;
+}
+
 export interface ReportAnalytics {
   revenue: {
     total: string;
