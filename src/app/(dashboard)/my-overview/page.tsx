@@ -16,8 +16,10 @@ import {
   useGetMySummaryQuery,
   useListMyCommissionsQuery,
 } from "@/features/commission/api/commission.api";
+import { useGetMyOccupancyQuery } from "@/features/occupancy/api/occupancy.api";
 import type { BookingDomain } from "@/features/payment/types/payment.types";
 import { BookingsChart } from "@/modules/commission-management/components/bookings-chart";
+import { OccupancyChart } from "@/modules/commission-management/components/occupancy-chart";
 import { PayoutStatusBadge } from "@/modules/commission-management/components/payout-status-badge";
 import { RevenueChart } from "@/modules/commission-management/components/revenue-chart";
 import { StatCard } from "@/modules/dashboard/components/stat-card";
@@ -50,6 +52,7 @@ export default function MyOverviewPage() {
   });
   const { data: analytics, isLoading: isLoadingAnalytics, isError: isAnalyticsError } =
     useGetMyAnalyticsQuery();
+  const { data: occupancy } = useGetMyOccupancyQuery();
 
   useEffect(() => {
     if (
@@ -104,6 +107,7 @@ export default function MyOverviewPage() {
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <RevenueChart data={analytics} />
               <BookingsChart data={analytics} />
+              {occupancy && <OccupancyChart data={occupancy} />}
             </div>
           )
         )}
