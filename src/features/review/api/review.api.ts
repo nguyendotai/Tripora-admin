@@ -4,6 +4,9 @@ import type { PaginatedReviews } from "../types/review.types";
 export interface ReviewListParams {
   destinationId?: string;
   propertyId?: string;
+  tourId?: string;
+  experienceId?: string;
+  flightId?: string;
   page?: number;
   limit?: number;
 }
