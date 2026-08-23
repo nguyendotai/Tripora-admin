@@ -47,7 +47,11 @@ export default function MyReviewsPage() {
   const { data, isLoading, isError } = useListMyReviewsQuery({ limit: 50 });
 
   useEffect(() => {
-    if (user && (!user.providerId || user.providerType !== "HOTEL")) {
+    if (
+      user &&
+      (!user.providerId ||
+        !["HOTEL", "TOUR", "ACTIVITY", "FLIGHT"].includes(user.providerType ?? ""))
+    ) {
       router.replace(user.providerId ? "/my-properties" : "/");
     }
   }, [user, router]);

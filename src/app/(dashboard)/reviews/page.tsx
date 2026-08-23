@@ -13,9 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListDestinationsQuery } from "@/features/destination/api/destination.api";
+import { useListExperiencesForModerationQuery } from "@/features/experience/api/experience.api";
+import { useListFlightsForModerationQuery } from "@/features/flight/api/flight.api";
 import { useListPropertiesForModerationQuery } from "@/features/property/api/property.api";
 import { useListReviewsQuery } from "@/features/review/api/review.api";
 import type { Review } from "@/features/review/types/review.types";
+import { useListToursForModerationQuery } from "@/features/tour/api/tour.api";
 import { DeleteReviewDialog } from "@/modules/review-management/components/delete-review-dialog";
 import { Header } from "@/shared/components/header";
 import { cn } from "@/lib/utils";
@@ -45,6 +48,9 @@ export default function ReviewsManagementPage() {
   const { data, isLoading, isError } = useListReviewsQuery({ limit: 50 });
   const { data: destinations } = useListDestinationsQuery({ limit: 100 });
   const { data: properties } = useListPropertiesForModerationQuery({ limit: 100 });
+  const { data: tours } = useListToursForModerationQuery({ limit: 100 });
+  const { data: experiences } = useListExperiencesForModerationQuery({ limit: 100 });
+  const { data: flights } = useListFlightsForModerationQuery({ limit: 100 });
   const [deleting, setDeleting] = useState<Review | null>(null);
 
   const destinationNameById = new Map(
@@ -52,6 +58,13 @@ export default function ReviewsManagementPage() {
   );
   const propertyNameById = new Map(
     (properties?.items ?? []).map((p) => [p.id, p.name]),
+  );
+  const tourNameById = new Map((tours?.items ?? []).map((t) => [t.id, t.title]));
+  const experienceNameById = new Map(
+    (experiences?.items ?? []).map((e) => [e.id, e.title]),
+  );
+  const flightNumberById = new Map(
+    (flights?.items ?? []).map((f) => [f.id, f.flightNumber]),
   );
 
   return (
@@ -103,6 +116,29 @@ export default function ReviewsManagementPage() {
                             Khách sạn
                           </Badge>
                           <span>{propertyNameById.get(review.propertyId) ?? `#${review.propertyId}`}</span>
+                        </div>
+                      ) : review.tourId ? (
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-full bg-[#E7F0FF] text-[#2563EB] dark:bg-[#16233D] dark:text-[#7FADFF]">
+                            Tour
+                          </Badge>
+                          <span>{tourNameById.get(review.tourId) ?? `#${review.tourId}`}</span>
+                        </div>
+                      ) : review.experienceId ? (
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-full bg-[#E7F0FF] text-[#2563EB] dark:bg-[#16233D] dark:text-[#7FADFF]">
+                            Trải nghiệm
+                          </Badge>
+                          <span>
+                            {experienceNameById.get(review.experienceId) ?? `#${review.experienceId}`}
+                          </span>
+                        </div>
+                      ) : review.flightId ? (
+                        <div className="flex items-center gap-2">
+                          <Badge className="rounded-full bg-[#E7F0FF] text-[#2563EB] dark:bg-[#16233D] dark:text-[#7FADFF]">
+                            Chuyến bay
+                          </Badge>
+                          <span>{flightNumberById.get(review.flightId) ?? `#${review.flightId}`}</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">

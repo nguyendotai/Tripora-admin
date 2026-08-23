@@ -121,6 +121,7 @@ const TOUR_PROVIDER_NAV_GROUPS = [
       { href: "/my-tours", label: "Tour của tôi", icon: Compass },
       { href: "/my-guides", label: "Hướng dẫn viên", icon: UserCog },
       { href: "/my-tour-bookings", label: "Đặt tour của tôi", icon: CalendarCheck },
+      { href: "/my-reviews", label: "Đánh giá", icon: Star },
     ],
   },
 ];
@@ -141,6 +142,7 @@ const EXPERIENCE_PROVIDER_NAV_GROUPS = [
     items: [
       { href: "/my-experiences", label: "Experience của tôi", icon: Ticket },
       { href: "/my-experience-bookings", label: "Đặt experience của tôi", icon: CalendarCheck },
+      { href: "/my-reviews", label: "Đánh giá", icon: Star },
     ],
   },
 ];
@@ -193,6 +195,7 @@ const FLIGHT_PROVIDER_NAV_GROUPS = [
       { href: "/my-aircrafts", label: "Máy bay của tôi", icon: Plane },
       { href: "/my-flights", label: "Chuyến bay của tôi", icon: PlaneTakeoff },
       { href: "/my-flight-bookings", label: "Đặt vé của tôi", icon: CalendarCheck },
+      { href: "/my-reviews", label: "Đánh giá", icon: Star },
     ],
   },
 ];
