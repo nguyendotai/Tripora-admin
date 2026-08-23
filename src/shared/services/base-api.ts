@@ -94,6 +94,7 @@ export const baseApi = createApi({
     "Conversation",
     "Message",
     "Report",
+    "Occupancy",
   ],
   endpoints: () => ({}),
 });
