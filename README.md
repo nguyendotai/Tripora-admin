@@ -4,6 +4,16 @@ The operations console for **Tripora**, a full-stack travel marketplace — one 
 
 Part of a 3-repo system: this app, the [backend API](https://github.com/nguyendotai/Tripora-backend), and the [customer-facing app](https://github.com/nguyendotai/Tripora-site).
 
+**🔗 Live demo:** [tripora-admin.vercel.app](https://tripora-admin.vercel.app/)
+> The backend runs on a free instance — first load can take 30–60s if it's been idle.
+
+**Demo credentials:**
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| Platform Admin | `demo-admin@tripora.dev` | `TriporaDemo2026!` |
+| Provider Owner (Tour operator, real booking/commission data) | `demo-provider@tripora.dev` | `TriporaDemo2026!` |
+
 ![Admin dashboard](docs/screenshots/dashboard.png)
 
 ## Highlights
